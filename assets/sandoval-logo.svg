@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" fill="none">
+  <!-- House body -->
+  <rect x="6" y="26" width="48" height="30" rx="2" fill="#1d4ed8"/>
+  <!-- Roof -->
+  <polygon points="30,4 56,28 4,28" fill="#1e3a8a"/>
+  <!-- Chimney -->
+  <rect x="40" y="14" width="7" height="16" fill="#1e3a8a"/>
+  <!-- Door -->
+  <rect x="22" y="38" width="16" height="18" rx="1" fill="#93c5fd"/>
+  <!-- Door knob -->
+  <circle cx="35" cy="47" r="1.2" fill="#1d4ed8"/>
+  <!-- Left window -->
+  <rect x="9" y="32" width="11" height="9" rx="1" fill="#bfdbfe"/>
+  <!-- Right window -->
+  <rect x="40" y="32" width="11" height="9" rx="1" fill="#bfdbfe"/>
+  <!-- Leaf accent -->
+  <ellipse cx="52" cy="52" rx="5" ry="4" fill="#16a34a" opacity="0.9"/>
+  <path d="M52 52 C52 46 46 47 48 52" fill="#15803d"/>
+</svg>

@@ -1,0 +1,11 @@
+# Ignore Qwen-generated source files (replaced by proper HTML/CSS/JS)
+*.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor folders
+.vscode/
+.idea/
