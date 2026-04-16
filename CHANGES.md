@@ -59,6 +59,71 @@
 
 ---
 
+## Phase 5 Updates (April 2026)
+
+### Individual Service Pages (8 new pages)
+Created a dedicated page for each service using a consistent template (page banner, two-column detail section, CTA, footer with individual service links):
+- `handyman.html` — banner: `images/handyman.jpg`
+- `painting.html` — banner: `images/painting.png`
+- `flooring.html` — banner: `images/flooring.png`
+- `landscaping.html` — banner: `images/landscaping.png`
+- `home-repairs.html` — banner: `images/home_repairs.jpg`
+- `drywall.html` — banner: `images/home_repairs.jpg`
+- `fence-deck.html` — banner: `images/Deck.jpg`
+- `general-maintenance.html` — banner: `images/general_maintenance.jpg`
+
+Each page includes: header/nav, page banner with overlay, bullet list of included services, two-column layout with image + service area box, orange CTA section, footer, and mobile sticky call bar.
+
+### Footer Services Column — All Pages
+Updated footer Services column links on all 6 existing pages (index, about, services, gallery, contact, request-quote) to point to individual service pages instead of `services.html`.
+
+### Hero Section (`index.html`)
+- Added tagline line: `"Home Improvement in Northern Virginia / DMV"` (orange, uppercase, above h1)
+- Trust pill updated to: `"Licensed & Insured in VA, DC, MD"`
+
+### Service Area Cities (`index.html`)
+- Added city pills: Woodbridge, Manassas, Rockville, Silver Spring
+
+### Testimonials (`index.html`)
+- Updated reviewer locations: Arlington VA / Fairfax VA / McLean VA (replaced Texas references)
+
+### Experience Statement (`about.html`)
+- Added highlighted box after body paragraphs: Sal Sandoval — 10+ years hands-on experience, personally oversees every project
+
+### Learn More Hover Animation (`css/styles.css`)
+- Added `.learn-more-link` class: `inline-flex`, arrow SVG slides right 4px on hover (`translateX(4px)`)
+
+### Mobile Sticky Call Bar (`css/styles.css` + all pages)
+- Added `#mobile-call-sticky`: full-width fixed bar at bottom of screen, orange background, phone number
+- Visible only on mobile (`max-width: 767px`); hidden on desktop
+- Existing `#float-call` round button hidden on mobile to avoid overlap
+- Body gets `padding-bottom: 58px` on mobile to prevent content overlap
+
+### Services Page (`services.html`)
+- Removed individual "Get a Quote" buttons from all 8 service cards
+- Added single "Get a Free Quote" CTA button below the services grid
+- Added "Learn More" links to each service card pointing to individual service pages
+
+### Gallery Page (`gallery.html`)
+- Added Before/After project photo section below the gallery grid
+- 4 project pairs shown side-by-side with "Before" / "After" badges:
+  - Fence Installation (Woodbridge VA)
+  - Room Addition (Fairfax VA)
+  - Flooring Upgrade (Alexandria VA)
+  - Interior Painting (Reston VA)
+
+### Contact Page (`contact.html`)
+- Updated Google Maps embed from San Antonio, TX to Fairfax, VA (Northern Virginia)
+
+### Logo Size (`all pages`)
+- Header logo increased: `h-10` → `h-12` across all pages
+
+### Footer Legal Links (all pages)
+- Removed "Privacy Policy" and "Terms of Service" links from all footers
+- Replaced with simple centered copyright line — no empty containers left behind
+
+---
+
 ## Asset Inventory (as of April 2026)
 
 ### `assets/` folder
@@ -90,7 +155,7 @@
 - **Stack**: Pure static HTML/CSS/JS — no build pipeline
 - **CSS**: Tailwind v3 Play CDN (`cdn.tailwindcss.com`) + `css/styles.css` (pure CSS, no @apply)
 - **JS**: `js/script.js` — vanilla JS for nav toggle, carousel, lightbox, gallery filter, forms
-- **Pages**: index.html, services.html, about.html, gallery.html, contact.html, request-quote.html
+- **Pages**: index.html, services.html, about.html, gallery.html, contact.html, request-quote.html, handyman.html, painting.html, flooring.html, landscaping.html, home-repairs.html, drywall.html, fence-deck.html, general-maintenance.html
 - **Color palette**: Navy `#0f172a` (header/stats), Orange `#ea580c` (CTAs/accents), Dark `#020817` (footer)
 - **Git remote**: https://github.com/jrumph3982/sandoval-home-improvement.git
 
