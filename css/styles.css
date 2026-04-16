@@ -376,3 +376,44 @@ input:focus, select:focus, textarea:focus {
 /* Footer */
 .site-footer { background: #020817; }
 .site-footer a:hover { color: #fb923c; }
+
+/* ---- Learn More link hover animation ---- */
+.learn-more-link {
+  display: inline-flex;
+  align-items: center;
+  transition: gap 0.2s ease, color 0.2s ease;
+}
+.learn-more-link svg {
+  transition: transform 0.2s ease;
+}
+.learn-more-link:hover svg {
+  transform: translateX(4px);
+}
+
+/* ---- Mobile Sticky Call Bar ---- */
+#mobile-call-sticky {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  background: #ea580c;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1rem;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  box-shadow: 0 -2px 12px rgba(234, 88, 12, 0.4);
+}
+#mobile-call-sticky:hover { background: #c2410c; color: white; }
+@media (min-width: 768px) {
+  #mobile-call-sticky { display: none; }
+}
+@media (max-width: 767px) {
+  body { padding-bottom: 58px; }
+  #float-call { display: none; }
+}
