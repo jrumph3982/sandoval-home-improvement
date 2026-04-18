@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Internal estimate builder for Sandoval Home Improvement projects.">
+  <title>Estimate Builder | Admin Panel | Sandoval Home Improvement</title>
+  <link rel="icon" href="assets/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* ===== Estimate Builder Styles ===== */
+    .est-card {
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .est-card-header {
+      background: #0f172a;
+      color: white;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .est-card-header h3 {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .est-card-body {
+      padding: 1.25rem 1.5rem;
+    }
+    .est-table { width: 100%; border-collapse: collapse; }
+    .est-table th {
+      font-size: 0.67rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #64748b;
+      padding: 0 0.4rem 0.65rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .est-table td { padding: 0.35rem 0.4rem; vertical-align: middle; }
+    .est-table tbody tr:not(:last-child) td { border-bottom: 1px solid #f1f5f9; }
+    .est-table tbody tr { transition: background 0.1s; }
+    .est-table tbody tr:hover { background: #fafafa; }
+
+    .est-input {
+      width: 100%;
+      padding: 0.42rem 0.6rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 0.83rem;
+      background: white;
+      color: #1e293b;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      font-family: inherit;
+    }
+    .est-input:focus {
+      outline: none;
+      border-color: #ea580c;
+      box-shadow: 0 0 0 3px rgba(234,88,12,0.15);
+    }
+    .est-select {
+      width: 100%;
+      padding: 0.42rem 1.8rem 0.42rem 0.6rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 0.83rem;
+      background: white;
+      color: #1e293b;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.6rem center;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      font-family: inherit;
+    }
+    .est-select:focus {
+      outline: none;
+      border-color: #ea580c;
+      box-shadow: 0 0 0 3px rgba(234,88,12,0.15);
+    }
+
+    .line-total-cell {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 0.83rem;
+      white-space: nowrap;
+      padding-left: 0.5rem !important;
+    }
+    .remove-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: #fee2e2;
+      color: #dc2626;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      line-height: 1;
+      transition: background 0.2s, transform 0.1s;
+      flex-shrink: 0;
+    }
+    .remove-btn:hover { background: #fca5a5; transform: scale(1.1); }
+
+    .add-row-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      background: #f8fafc;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 0.5rem;
+      color: #64748b;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .add-row-btn:hover {
+      background: #fff7ed;
+      border-color: #ea580c;
+      color: #ea580c;
+    }
+
+    /* Summary Sidebar */
+    .summary-sticky { position: sticky; top: 5rem; }
+    .summary-card { background: #0f172a; border-radius: 0.75rem; overflow: hidden; }
+    .summary-header { background: #1e293b; padding: 1rem 1.25rem; }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 1.25rem;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.82rem;
+    }
+    .summary-row:last-of-type { border-bottom: none; }
+    .summary-label { color: #94a3b8; }
+    .summary-value { font-weight: 700; color: white; font-variant-numeric: tabular-nums; }
+    .subtotal-row { background: #0a0f1e; }
+    .subtotal-row .summary-label { color: #e2e8f0; font-weight: 600; }
+    .final-row {
+      background: #ea580c;
+      padding: 0.9rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .final-row .summary-label { color: rgba(255,255,255,0.9); font-weight: 700; font-size: 0.85rem; }
+    .final-row .summary-value { font-size: 1.3rem; font-weight: 900; color: white; }
+
+    /* Adjustments */
+    .adj-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .adj-row:last-of-type { border-bottom: none; }
+    .adj-label { flex: 1; font-size: 0.875rem; color: #374151; font-weight: 500; }
+    .adj-pct-wrap { display: flex; align-items: center; gap: 0.3rem; }
+    .adj-pct-input {
+      width: 72px !important;
+      text-align: right;
+      font-weight: 600;
+    }
+    .adj-computed {
+      width: 110px;
+      text-align: right;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: #0f172a;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Info grid */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .info-grid { grid-template-columns: 1fr; } }
+    .form-group label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 0.3rem;
+    }
+
+    /* Section total badge */
+    .section-total {
+      background: #ea580c;
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.22rem 0.7rem;
+      border-radius: 9999px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.03em;
+    }
+
+    /* Custom field toggle */
+    .custom-wrap { position: relative; }
+    .custom-back-btn {
+      position: absolute;
+      right: 2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+    }
+    .custom-back-btn:hover { color: #ea580c; }
+
+    /* Mobile table scroll */
+    @media (max-width: 768px) {
+      .est-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .est-table { min-width: 520px; }
+    }
+
+    /* Action bar */
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.1rem;
+      border-radius: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    /* Save indicator */
+    .save-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      display: inline-block;
+      animation: pulse-green 2s infinite;
+    }
+    @keyframes pulse-green {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Print styles */
+    @media print {
+      .no-print { display: none !important; }
+      #mobile-call-sticky { display: none !important; }
+      body { padding-bottom: 0 !important; background: white !important; }
+      main { padding: 0 !important; }
+      .est-card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; page-break-inside: avoid; }
+      .summary-sidebar { display: block !important; width: 100% !important; }
+      .summary-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .final-row { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .section-total { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .est-card-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .lg\:flex-row { flex-direction: column !important; }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Floating Call Button -->
+  <a id="float-call" href="tel:+17039377579" aria-label="Call now" class="no-print">
+    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21L8.5 10.5a11.038 11.038 0 005 5l1.11-1.724a1 1 0 011.21-.502l4.493 1.498A1 1 0 0121 15.72V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z" />
+    </svg>
+    Call Now
+  </a>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header sticky top-0 z-50 shadow-lg no-print">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex-shrink-0">
+        <div class="logo-pill">
+          <img src="assets/logo.png" alt="Sandoval Home Improvement" class="h-12 w-auto">
+        </div>
+      </a>
+      <div class="hidden md:flex items-center gap-7">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="services.html" class="nav-link">Services</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="gallery.html" class="nav-link">Gallery</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <a href="request-quote.html" class="bg-orange-600 text-white text-sm font-bold px-5 py-2.5 rounded hover:bg-orange-700 transition-colors uppercase tracking-wide">Free Quote</a>
+      </div>
+      <button id="nav-toggle" class="md:hidden p-2 text-slate-300 hover:text-white focus:outline-none" aria-label="Toggle menu" aria-expanded="false">
+        <div class="w-6 flex flex-col gap-1.5">
+          <span class="bar block h-0.5 w-6 bg-slate-300 transition-all duration-300 origin-center"></span>
+          <span class="bar block h-0.5 w-6 bg-slate-300 transition-all duration-300"></span>
+          <span class="bar block h-0.5 w-6 bg-slate-300 transition-all duration-300 origin-center"></span>
+        </div>
+      </button>
+    </nav>
+    <div id="nav-menu" class="hidden md:hidden">
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="about.html">About</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+      <a href="request-quote.html" style="background:#ea580c;color:white;font-weight:700">Free Quote</a>
+    </div>
+  </header>
+
+  <!-- ===== PAGE BANNER ===== -->
+  <div class="page-banner no-print" style="background-image:url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1920&q=80')">
+    <div class="banner-content py-14 px-4 max-w-7xl mx-auto">
+      <p class="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">Internal Tool</p>
+      <h1 class="text-3xl sm:text-4xl font-black text-white uppercase">Admin Panel &mdash; Estimate Builder</h1>
+      <span class="accent-bar-left mt-3"></span>
+      <p class="text-slate-300 mt-4 text-sm max-w-lg">Build professional project estimates with live cost calculations. Changes save automatically.</p>
+    </div>
+  </div>
+
+  <!-- ===== MAIN ===== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+    <!-- Action Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-7 no-print">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-2 text-xs font-semibold text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full" id="save-indicator">
+          <span class="save-dot"></span>
+          Auto-saved
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="action-btn" style="background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;" onclick="resetForm()">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Reset
+        </button>
+        <button class="action-btn" style="background:#0f172a;color:white;" onclick="window.print()">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          Print Estimate
+        </button>
+      </div>
+    </div>
+
+    <!-- Two-column layout: form + sticky summary -->
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+
+      <!-- ===== LEFT: FORM SECTIONS ===== -->
+      <div class="flex-1 min-w-0">
+
+        <!-- 1. PROJECT INFORMATION -->
+        <div class="est-card">
+          <div class="est-card-header">
+            <h3>1 &mdash; Project Information</h3>
+          </div>
+          <div class="est-card-body">
+            <div class="info-grid mb-4">
+              <div class="form-group">
+                <label for="customer-name">Customer Name</label>
+                <input type="text" id="customer-name" class="est-input" placeholder="John &amp; Jane Smith" oninput="syncSummaryHeader(); autoSave()">
+              </div>
+              <div class="form-group">
+                <label for="est-number">Estimate #</label>
+                <input type="text" id="est-number" class="est-input" placeholder="EST-001" oninput="autoSave()">
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label for="project-address">Project Address</label>
+                <input type="text" id="project-address" class="est-input" placeholder="123 Main St, Woodbridge, VA 22191" oninput="autoSave()">
+              </div>
+              <div class="form-group">
+                <label for="project-type">Project Type</label>
+                <select id="project-type" class="est-select" onchange="autoSave()">
+                  <option value="">Select type…</option>
+                  <option>Handyman Services</option>
+                  <option>Home Repairs</option>
+                  <option>Landscaping</option>
+                  <option>Painting (Interior)</option>
+                  <option>Painting (Exterior)</option>
+                  <option>Flooring</option>
+                  <option>Fence &amp; Deck</option>
+                  <option>Kitchen Remodel</option>
+                  <option>Bathroom Remodel</option>
+                  <option>Roofing</option>
+                  <option>Concrete &amp; Masonry</option>
+                  <option>Drywall</option>
+                  <option>General Maintenance</option>
+                  <option>New Construction</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="est-date">Estimate Date</label>
+                <input type="date" id="est-date" class="est-input" oninput="syncSummaryHeader(); autoSave()">
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label for="project-description">Project Description / Scope of Work</label>
+                <textarea id="project-description" class="est-input" rows="3" placeholder="Describe the full scope of work, materials to be used, areas affected, etc." oninput="autoSave()" style="resize:vertical;"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. LABOR -->
+        <div class="est-card">
+          <div class="est-card-header">
+            <h3>2 &mdash; Labor</h3>
+            <span class="section-total" id="labor-badge">$0.00</span>
+          </div>
+          <div class="est-card-body">
+            <div class="est-table-wrap">
+              <table class="est-table" id="labor-table">
+                <thead>
+                  <tr>
+                    <th style="min-width:170px">Role / Trade</th>
+                    <th style="min-width:75px">Hours</th>
+                    <th style="min-width:90px">Rate $/hr</th>
+                    <th style="min-width:80px">Crew</th>
+                    <th style="min-width:100px">Line Total</th>
+                    <th style="width:34px"></th>
+                  </tr>
+                </thead>
+                <tbody id="labor-body"></tbody>
+              </table>
+            </div>
+            <div class="mt-4 flex items-center justify-between flex-wrap gap-2">
+              <button class="add-row-btn no-print" onclick="addLaborRow()">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Add Labor Row
+              </button>
+              <span class="text-xs text-gray-400">Hours &times; Rate &times; Crew Size</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. MATERIALS -->
+        <div class="est-card">
+          <div class="est-card-header">
+            <h3>3 &mdash; Materials</h3>
+            <span class="section-total" id="materials-badge">$0.00</span>
+          </div>
+          <div class="est-card-body">
+            <div class="est-table-wrap">
+              <table class="est-table" id="materials-table">
+                <thead>
+                  <tr>
+                    <th style="min-width:165px">Item / Material</th>
+                    <th style="min-width:70px">Qty</th>
+                    <th style="min-width:90px">Unit Cost</th>
+                    <th style="min-width:75px">Waste %</th>
+                    <th style="min-width:105px">Line Total</th>
+                    <th style="width:34px"></th>
+                  </tr>
+                </thead>
+                <tbody id="materials-body"></tbody>
+              </table>
+            </div>
+            <div class="mt-4 flex items-center justify-between flex-wrap gap-2">
+              <button class="add-row-btn no-print" onclick="addMaterialRow()">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Add Material Row
+              </button>
+              <span class="text-xs text-gray-400">Qty &times; (1 + Waste%) &times; Unit Cost</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. EQUIPMENT -->
+        <div class="est-card">
+          <div class="est-card-header">
+            <h3>4 &mdash; Equipment &amp; Rentals</h3>
+            <span class="section-total" id="equipment-badge">$0.00</span>
+          </div>
+          <div class="est-card-body">
+            <div class="est-table-wrap">
+              <table class="est-table" id="equipment-table">
+                <thead>
+                  <tr>
+                    <th style="min-width:185px">Equipment / Item</th>
+                    <th style="min-width:70px">Days</th>
+                    <th style="min-width:100px">Daily Rate</th>
+                    <th style="min-width:105px">Line Total</th>
+                    <th style="width:34px"></th>
+                  </tr>
+                </thead>
+                <tbody id="equipment-body"></tbody>
+              </table>
+            </div>
+            <div class="mt-4 flex items-center justify-between flex-wrap gap-2">
+              <button class="add-row-btn no-print" onclick="addEquipmentRow()">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Add Equipment Row
+              </button>
+              <span class="text-xs text-gray-400">Days &times; Daily Rate</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. SUBCONTRACTORS -->
+        <div class="est-card">
+          <div class="est-card-header">
+            <h3>5 &mdash; Subcontractors</h3>
+            <span class="section-total" id="sub-badge">$0.00</span>
+          </div>
+          <div class="est-card-body">
+            <div class="est-table-wrap">
+              <table class="est-table" id="sub-table">
+                <thead>
+                  <tr>
+                    <th style="min-width:220px">Trade / Description</th>
+                    <th style="min-width:130px">Contract Cost</th>
+                    <th style="width:34px"></th>
+                  </tr>
+                </thead>
+                <tbody id="sub-body"></tbody>
+              </table>
+            </div>
+            <div class="mt-4">
+              <button class="add-row-btn no-print" onclick="addSubRow()">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Add Subcontractor
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. ADJUSTMENTS -->
+        <div class="est-card">
+          <div class="est-card-header">
+            <h3>6 &mdash; Adjustments</h3>
+          </div>
+          <div class="est-card-body">
+            <div class="adj-row">
+              <span class="adj-label">
+                <span class="font-semibold">Overhead</span>
+                <span class="block text-xs text-gray-400 mt-0.5">Applied to subtotal</span>
+              </span>
+              <div class="adj-pct-wrap">
+                <input type="number" id="overhead-pct" class="est-input adj-pct-input" value="15" min="0" max="100" step="0.5" oninput="calculate(); autoSave()">
+                <span class="text-gray-500 text-sm ml-1">%</span>
+              </div>
+              <span class="adj-computed" id="overhead-val">$0.00</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-label">
+                <span class="font-semibold">Contingency</span>
+                <span class="block text-xs text-gray-400 mt-0.5">Applied after overhead</span>
+              </span>
+              <div class="adj-pct-wrap">
+                <input type="number" id="contingency-pct" class="est-input adj-pct-input" value="7" min="0" max="100" step="0.5" oninput="calculate(); autoSave()">
+                <span class="text-gray-500 text-sm ml-1">%</span>
+              </div>
+              <span class="adj-computed" id="contingency-val">$0.00</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-label">
+                <span class="font-semibold">Profit Margin</span>
+                <span class="block text-xs text-gray-400 mt-0.5">Applied after overhead + contingency</span>
+              </span>
+              <div class="adj-pct-wrap">
+                <input type="number" id="profit-pct" class="est-input adj-pct-input" value="20" min="0" max="100" step="0.5" oninput="calculate(); autoSave()">
+                <span class="text-gray-500 text-sm ml-1">%</span>
+              </div>
+              <span class="adj-computed" id="profit-val">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTES -->
+        <div class="est-card">
+          <div class="est-card-header">
+            <h3>Notes &amp; Terms</h3>
+          </div>
+          <div class="est-card-body">
+            <div class="form-group">
+              <label for="est-notes">Additional Notes / Payment Terms / Exclusions</label>
+              <textarea id="est-notes" class="est-input" rows="4" placeholder="e.g. 50% deposit required before work begins. Balance due upon completion. Estimate valid for 30 days. Excludes permit fees unless noted..." oninput="autoSave()" style="resize:vertical;"></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /left form -->
+
+      <!-- ===== RIGHT: STICKY SUMMARY ===== -->
+      <div class="lg:w-72 xl:w-80 w-full summary-sidebar" style="flex-shrink:0;">
+        <div class="summary-sticky">
+          <div class="summary-card">
+            <div class="summary-header">
+              <p style="color:#64748b;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Estimate Summary</p>
+              <p id="sum-customer" style="color:white;font-weight:700;font-size:0.9rem;margin-top:0.3rem;">—</p>
+              <p id="sum-date" style="color:#64748b;font-size:0.72rem;margin-top:0.15rem;"></p>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Labor</span>
+              <span class="summary-value" id="sum-labor">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Materials</span>
+              <span class="summary-value" id="sum-materials">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Equipment</span>
+              <span class="summary-value" id="sum-equipment">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Subcontractors</span>
+              <span class="summary-value" id="sum-sub">$0.00</span>
+            </div>
+
+            <div class="summary-row subtotal-row">
+              <span class="summary-label">Subtotal</span>
+              <span class="summary-value" id="sum-subtotal">$0.00</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Overhead <span class="text-xs opacity-60">(<span id="sum-ovh-pct">15</span>%)</span></span>
+              <span class="summary-value" id="sum-overhead">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Contingency <span class="text-xs opacity-60">(<span id="sum-con-pct">7</span>%)</span></span>
+              <span class="summary-value" id="sum-contingency">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Profit <span class="text-xs opacity-60">(<span id="sum-pro-pct">20</span>%)</span></span>
+              <span class="summary-value" id="sum-profit">$0.00</span>
+            </div>
+
+            <div class="final-row">
+              <span class="summary-label">TOTAL ESTIMATE</span>
+              <span class="summary-value" id="sum-total">$0.00</span>
+            </div>
+          </div>
+
+          <div class="mt-3 space-y-2 no-print">
+            <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-600 text-white rounded-lg font-bold hover:bg-orange-700 transition-colors text-sm">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+              Print Estimate
+            </button>
+            <button onclick="resetForm()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-slate-200 text-slate-500 rounded-lg font-bold hover:border-red-300 hover:text-red-500 transition-colors text-sm bg-white">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Reset Form
+            </button>
+          </div>
+        </div>
+      </div><!-- /right summary -->
+
+    </div><!-- /two-col flex -->
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer text-gray-400 pt-14 pb-8 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+        <div>
+          <div class="logo-pill inline-flex mb-5">
+            <img src="assets/logo.png" alt="Sandoval Home Improvement" class="h-12 w-auto">
+          </div>
+          <p class="text-sm text-gray-500 leading-relaxed">Your trusted partner for every home improvement project, big or small. Locally owned since 2014.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-black mb-4 text-xs uppercase tracking-widest">Quick Links</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="index.html" class="hover:text-orange-400 transition-colors">Home</a></li>
+            <li><a href="services.html" class="hover:text-orange-400 transition-colors">Services</a></li>
+            <li><a href="about.html" class="hover:text-orange-400 transition-colors">About Us</a></li>
+            <li><a href="gallery.html" class="hover:text-orange-400 transition-colors">Gallery</a></li>
+            <li><a href="request-quote.html" class="hover:text-orange-400 transition-colors">Request Quote</a></li>
+            <li><a href="contact.html" class="hover:text-orange-400 transition-colors">Contact</a></li>
+            <li><a href="estimate.html" class="hover:text-orange-400 transition-colors text-orange-500 font-semibold">Admin Panel</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-black mb-4 text-xs uppercase tracking-widest">Services</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="handyman.html" class="hover:text-orange-400 transition-colors">Handyman Services</a></li>
+            <li><a href="home-repairs.html" class="hover:text-orange-400 transition-colors">Home Repairs</a></li>
+            <li><a href="landscaping.html" class="hover:text-orange-400 transition-colors">Landscaping</a></li>
+            <li><a href="painting.html" class="hover:text-orange-400 transition-colors">Painting</a></li>
+            <li><a href="flooring.html" class="hover:text-orange-400 transition-colors">Flooring</a></li>
+            <li><a href="fence-deck.html" class="hover:text-orange-400 transition-colors">Fence &amp; Deck</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-black mb-4 text-xs uppercase tracking-widest">Contact</h4>
+          <ul class="space-y-4 text-sm">
+            <li class="flex items-start gap-3">
+              <svg class="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21L8.5 10.5a11.038 11.038 0 005 5l1.11-1.724a1 1 0 011.21-.502l4.493 1.498A1 1 0 0121 15.72V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z"/></svg>
+              <div><a href="tel:+17039377579" class="text-white font-bold hover:text-orange-400">703-937-7579</a><br><span class="text-xs text-gray-500">Mon–Sat 7am–7pm</span></div>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <a href="mailto:sandovalhomeimprovement@yahoo.com" class="hover:text-orange-400">sandovalhomeimprovement@yahoo.com</a>
+            </li>
+            <li class="flex items-start gap-3">
+              <svg class="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span>Northern Virginia, DC &amp; Maryland area</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 pt-6 text-center text-xs text-gray-600">
+        <p>&copy; 2026 Sandoval Home Improvement. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <a id="mobile-call-sticky" href="tel:+17039377579" class="no-print">
+    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21L8.5 10.5a11.038 11.038 0 005 5l1.11-1.724a1 1 0 011.21-.502l4.493 1.498A1 1 0 0121 15.72V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z"/>
+    </svg>
+    Call Now
+  </a>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    /* =========================================================
+       DROPDOWN OPTION SETS
+    ========================================================= */
+    const LABOR_ROLES = [
+      'Carpenter','Electrician','Plumber','HVAC Technician',
+      'Painter','Roofer','Mason / Brick Layer','Concrete Worker',
+      'Landscaper','Flooring Installer','Drywall Installer',
+      'General Labor','Foreman / Supervisor','Project Manager',
+      'Tile Setter','Fence Installer','Deck Builder','Custom…'
+    ];
+
+    const MATERIAL_ITEMS = [
+      'Lumber (2x4)','Lumber (2x6)','Plywood (4x8)','OSB Sheathing',
+      'Drywall (1/2")','Drywall (5/8")','Concrete (bag)','Concrete (yard)',
+      'Mortar / Grout','Brick / Block','Roofing Shingles','Roofing Underlayment',
+      'Roofing Nails','Roof Decking','Hardwood Flooring','Laminate Flooring',
+      'Vinyl Plank (LVP)','Tile (sq ft)','Carpet (sq yd)','Paint (gallon)',
+      'Primer (gallon)','Interior Trim','Exterior Trim','PVC Pipe',
+      'Copper Pipe','PEX Tubing','Electrical Wire','Outlet / Switch',
+      'Junction Box','Insulation (batt)','Spray Foam','House Wrap',
+      'Caulk / Sealant','Screws (box)','Nails (lb)','Hinges / Hardware',
+      'Door (pre-hung)','Window Unit','Deck Boards','Fence Pickets',
+      'Fence Posts','Concrete Footings','Landscape Fabric','Mulch (yard)',
+      'Topsoil (yard)','Gravel (yard)','Custom…'
+    ];
+
+    const EQUIPMENT_ITEMS = [
+      'Scaffolding (per section)','Dumpster / Roll-off (10 yd)',
+      'Dumpster / Roll-off (20 yd)','Dumpster / Roll-off (30 yd)',
+      'Air Compressor','Generator','Boom Lift / Scissor Lift',
+      'Mini Excavator','Skid Steer / Bobcat','Concrete Mixer',
+      'Pressure Washer','Tile Saw','Miter Saw (rental)',
+      'Floor Sander','Plate Compactor','Trencher',
+      'Jack Hammer','Paint Sprayer','Laser Level','Custom…'
+    ];
+
+    const SUB_TRADES = [
+      'Electrical','Plumbing','HVAC / Mechanical','Roofing',
+      'Concrete / Flatwork','Foundation Work','Landscaping',
+      'Painting','Flooring','Tile / Stone','Drywall / Plastering',
+      'Cabinetry','Countertops','Insulation','Windows / Doors',
+      'Masonry','Fencing','Deck / Porch','Waterproofing',
+      'Asbestos / Abatement','Custom…'
+    ];
+
+    /* =========================================================
+       UTILITY
+    ========================================================= */
+    function fmt(n) {
+      return '$' + (isNaN(n) ? 0 : n).toLocaleString('en-US', {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+      });
+    }
+    function num(el) { return parseFloat(el.value) || 0; }
+
+    function makeSelect(options, classes, onchange) {
+      const sel = document.createElement('select');
+      sel.className = classes;
+      options.forEach(opt => {
+        const o = document.createElement('option');
+        o.value = opt === 'Custom…' ? 'custom' : opt;
+        o.textContent = opt;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', onchange);
+      return sel;
+    }
+
+    function makeRemoveBtn() {
+      const btn = document.createElement('button');
+      btn.className = 'remove-btn no-print';
+      btn.title = 'Remove row';
+      btn.innerHTML = '&times;';
+      btn.addEventListener('click', function() {
+        this.closest('tr').remove();
+        calculate();
+        autoSave();
+      });
+      return btn;
+    }
+
+    /* =========================================================
+       CUSTOM SELECT TOGGLE
+       When user picks "Custom…", hide the select and show a text input.
+       A back-arrow link restores the select.
+    ========================================================= */
+    function handleCustomSelect(sel, textInput, backBtn) {
+      if (sel.value === 'custom') {
+        sel.style.display = 'none';
+        textInput.style.display = 'block';
+        if (backBtn) backBtn.style.display = 'inline-block';
+        textInput.focus();
+      }
+    }
+
+    function buildNameCell(options, placeholder, savedVal, isCustom) {
+      const td = document.createElement('td');
+
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;';
+
+      const sel = makeSelect(options, 'est-select', function() {
+        handleCustomSelect(this, inp, back);
+        calculate(); autoSave();
+      });
+
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.className = 'est-input';
+      inp.placeholder = placeholder;
+      inp.style.display = 'none';
+      inp.addEventListener('input', function() { calculate(); autoSave(); });
+
+      const back = document.createElement('button');
+      back.type = 'button';
+      back.innerHTML = '&#8592; pick';
+      back.style.cssText = 'display:none;font-size:0.68rem;color:#94a3b8;background:none;border:none;cursor:pointer;margin-top:2px;padding:0;';
+      back.addEventListener('click', function() {
+        inp.style.display = 'none';
+        back.style.display = 'none';
+        sel.style.display = 'block';
+        sel.value = '';
+        inp.value = '';
+        calculate(); autoSave();
+      });
+
+      // restore saved state
+      if (isCustom) {
+        sel.value = 'custom';
+        handleCustomSelect(sel, inp, back);
+        inp.value = savedVal || '';
+      } else if (savedVal) {
+        sel.value = savedVal;
+      }
+
+      wrap.appendChild(sel);
+      wrap.appendChild(inp);
+      wrap.appendChild(back);
+      td.appendChild(wrap);
+      return { td, sel, inp };
+    }
+
+    /* =========================================================
+       LABOR ROWS
+    ========================================================= */
+    function addLaborRow(d = {}) {
+      const tr = document.createElement('tr');
+      const tbody = document.getElementById('labor-body');
+
+      // Name cell
+      const { td: nameTd, sel: nameSel, inp: nameInp } = buildNameCell(
+        LABOR_ROLES, 'Enter trade/role', d.role, d.isCustomRole
+      );
+
+      // Hours
+      const hoursTd = document.createElement('td');
+      const hoursInp = document.createElement('input');
+      hoursInp.type = 'number'; hoursInp.className = 'est-input';
+      hoursInp.min = '0'; hoursInp.step = '0.5'; hoursInp.placeholder = '0';
+      hoursInp.value = d.hours || '';
+      hoursInp.addEventListener('input', function() { updateLaborLine(tr); autoSave(); });
+      hoursTd.appendChild(hoursInp);
+
+      // Rate
+      const rateTd = document.createElement('td');
+      const rateInp = document.createElement('input');
+      rateInp.type = 'number'; rateInp.className = 'est-input';
+      rateInp.min = '0'; rateInp.step = '0.5'; rateInp.placeholder = '0.00';
+      rateInp.value = d.rate || '';
+      rateInp.addEventListener('input', function() { updateLaborLine(tr); autoSave(); });
+      rateTd.appendChild(rateInp);
+
+      // Crew
+      const crewTd = document.createElement('td');
+      const crewInp = document.createElement('input');
+      crewInp.type = 'number'; crewInp.className = 'est-input';
+      crewInp.min = '1'; crewInp.step = '1'; crewInp.placeholder = '1';
+      crewInp.value = d.crew || '1';
+      crewInp.addEventListener('input', function() { updateLaborLine(tr); autoSave(); });
+      crewTd.appendChild(crewInp);
+
+      // Line total
+      const ltTd = document.createElement('td');
+      ltTd.className = 'line-total-cell';
+      ltTd.textContent = '$0.00';
+
+      // Remove
+      const rmTd = document.createElement('td');
+      rmTd.appendChild(makeRemoveBtn());
+
+      tr.appendChild(nameTd);
+      tr.appendChild(hoursTd);
+      tr.appendChild(rateTd);
+      tr.appendChild(crewTd);
+      tr.appendChild(ltTd);
+      tr.appendChild(rmTd);
+      tbody.appendChild(tr);
+
+      if (d.hours && d.rate) updateLaborLine(tr);
+    }
+
+    function updateLaborLine(tr) {
+      const cells = tr.querySelectorAll('input[type=number]');
+      const hours = parseFloat(cells[0].value) || 0;
+      const rate  = parseFloat(cells[1].value) || 0;
+      const crew  = parseFloat(cells[2].value) || 1;
+      const total = hours * rate * crew;
+      tr.querySelector('.line-total-cell').textContent = fmt(total);
+      calculate();
+    }
+
+    /* =========================================================
+       MATERIAL ROWS
+    ========================================================= */
+    function addMaterialRow(d = {}) {
+      const tr = document.createElement('tr');
+      const tbody = document.getElementById('materials-body');
+
+      const { td: nameTd } = buildNameCell(
+        MATERIAL_ITEMS, 'Enter material name', d.item, d.isCustomItem
+      );
+
+      // Quantity
+      const qtyTd = document.createElement('td');
+      const qtyInp = document.createElement('input');
+      qtyInp.type = 'number'; qtyInp.className = 'est-input';
+      qtyInp.min = '0'; qtyInp.step = '1'; qtyInp.placeholder = '0';
+      qtyInp.value = d.qty || '';
+      qtyInp.addEventListener('input', function() { updateMaterialLine(tr); autoSave(); });
+      qtyTd.appendChild(qtyInp);
+
+      // Unit Cost
+      const ucTd = document.createElement('td');
+      const ucInp = document.createElement('input');
+      ucInp.type = 'number'; ucInp.className = 'est-input';
+      ucInp.min = '0'; ucInp.step = '0.01'; ucInp.placeholder = '0.00';
+      ucInp.value = d.unitCost || '';
+      ucInp.addEventListener('input', function() { updateMaterialLine(tr); autoSave(); });
+      ucTd.appendChild(ucInp);
+
+      // Waste %
+      const wasteTd = document.createElement('td');
+      const wasteInp = document.createElement('input');
+      wasteInp.type = 'number'; wasteInp.className = 'est-input';
+      wasteInp.min = '0'; wasteInp.max = '100'; wasteInp.step = '1'; wasteInp.placeholder = '10';
+      wasteInp.value = d.waste !== undefined ? d.waste : '10';
+      wasteInp.addEventListener('input', function() { updateMaterialLine(tr); autoSave(); });
+      wasteTd.appendChild(wasteInp);
+
+      // Line total
+      const ltTd = document.createElement('td');
+      ltTd.className = 'line-total-cell';
+      ltTd.textContent = '$0.00';
+
+      // Remove
+      const rmTd = document.createElement('td');
+      rmTd.appendChild(makeRemoveBtn());
+
+      tr.appendChild(nameTd);
+      tr.appendChild(qtyTd);
+      tr.appendChild(ucTd);
+      tr.appendChild(wasteTd);
+      tr.appendChild(ltTd);
+      tr.appendChild(rmTd);
+      tbody.appendChild(tr);
+
+      if (d.qty && d.unitCost) updateMaterialLine(tr);
+    }
+
+    function updateMaterialLine(tr) {
+      const cells = tr.querySelectorAll('input[type=number]');
+      const qty      = parseFloat(cells[0].value) || 0;
+      const unitCost = parseFloat(cells[1].value) || 0;
+      const waste    = parseFloat(cells[2].value) || 0;
+      const adjQty   = qty * (1 + waste / 100);
+      const total    = adjQty * unitCost;
+      tr.querySelector('.line-total-cell').textContent = fmt(total);
+      calculate();
+    }
+
+    /* =========================================================
+       EQUIPMENT ROWS
+    ========================================================= */
+    function addEquipmentRow(d = {}) {
+      const tr = document.createElement('tr');
+      const tbody = document.getElementById('equipment-body');
+
+      const { td: nameTd } = buildNameCell(
+        EQUIPMENT_ITEMS, 'Enter equipment name', d.name, d.isCustomName
+      );
+
+      // Days
+      const daysTd = document.createElement('td');
+      const daysInp = document.createElement('input');
+      daysInp.type = 'number'; daysInp.className = 'est-input';
+      daysInp.min = '0'; daysInp.step = '0.5'; daysInp.placeholder = '0';
+      daysInp.value = d.days || '';
+      daysInp.addEventListener('input', function() { updateEquipmentLine(tr); autoSave(); });
+      daysTd.appendChild(daysInp);
+
+      // Daily Rate
+      const drTd = document.createElement('td');
+      const drInp = document.createElement('input');
+      drInp.type = 'number'; drInp.className = 'est-input';
+      drInp.min = '0'; drInp.step = '0.01'; drInp.placeholder = '0.00';
+      drInp.value = d.dailyRate || '';
+      drInp.addEventListener('input', function() { updateEquipmentLine(tr); autoSave(); });
+      drTd.appendChild(drInp);
+
+      // Line total
+      const ltTd = document.createElement('td');
+      ltTd.className = 'line-total-cell';
+      ltTd.textContent = '$0.00';
+
+      // Remove
+      const rmTd = document.createElement('td');
+      rmTd.appendChild(makeRemoveBtn());
+
+      tr.appendChild(nameTd);
+      tr.appendChild(daysTd);
+      tr.appendChild(drTd);
+      tr.appendChild(ltTd);
+      tr.appendChild(rmTd);
+      tbody.appendChild(tr);
+
+      if (d.days && d.dailyRate) updateEquipmentLine(tr);
+    }
+
+    function updateEquipmentLine(tr) {
+      const cells = tr.querySelectorAll('input[type=number]');
+      const days  = parseFloat(cells[0].value) || 0;
+      const rate  = parseFloat(cells[1].value) || 0;
+      const total = days * rate;
+      tr.querySelector('.line-total-cell').textContent = fmt(total);
+      calculate();
+    }
+
+    /* =========================================================
+       SUBCONTRACTOR ROWS
+    ========================================================= */
+    function addSubRow(d = {}) {
+      const tr = document.createElement('tr');
+      const tbody = document.getElementById('sub-body');
+
+      const { td: nameTd } = buildNameCell(
+        SUB_TRADES, 'Enter trade/description', d.trade, d.isCustomTrade
+      );
+
+      // Cost
+      const costTd = document.createElement('td');
+      const costInp = document.createElement('input');
+      costInp.type = 'number'; costInp.className = 'est-input';
+      costInp.min = '0'; costInp.step = '0.01'; costInp.placeholder = '0.00';
+      costInp.value = d.cost || '';
+      costInp.addEventListener('input', function() { calculate(); autoSave(); });
+      costTd.appendChild(costInp);
+
+      // Remove
+      const rmTd = document.createElement('td');
+      rmTd.appendChild(makeRemoveBtn());
+
+      tr.appendChild(nameTd);
+      tr.appendChild(costTd);
+      tr.appendChild(rmTd);
+      tbody.appendChild(tr);
+    }
+
+    /* =========================================================
+       MAIN CALCULATION ENGINE
+    ========================================================= */
+    function sectionTotal(bodyId, ltClass) {
+      let total = 0;
+      document.querySelectorAll(`#${bodyId} .${ltClass}`).forEach(el => {
+        total += parseFloat(el.textContent.replace(/[$,]/g, '')) || 0;
+      });
+      return total;
+    }
+
+    function laborTotal() {
+      let total = 0;
+      document.querySelectorAll('#labor-body tr').forEach(tr => {
+        const cells = tr.querySelectorAll('input[type=number]');
+        if (!cells.length) return;
+        const h = parseFloat(cells[0].value) || 0;
+        const r = parseFloat(cells[1].value) || 0;
+        const c = parseFloat(cells[2].value) || 1;
+        total += h * r * c;
+      });
+      return total;
+    }
+
+    function materialsTotal() {
+      let total = 0;
+      document.querySelectorAll('#materials-body tr').forEach(tr => {
+        const cells = tr.querySelectorAll('input[type=number]');
+        if (!cells.length) return;
+        const q  = parseFloat(cells[0].value) || 0;
+        const uc = parseFloat(cells[1].value) || 0;
+        const w  = parseFloat(cells[2].value) || 0;
+        total += q * (1 + w / 100) * uc;
+      });
+      return total;
+    }
+
+    function equipmentTotal() {
+      let total = 0;
+      document.querySelectorAll('#equipment-body tr').forEach(tr => {
+        const cells = tr.querySelectorAll('input[type=number]');
+        if (!cells.length) return;
+        const d = parseFloat(cells[0].value) || 0;
+        const r = parseFloat(cells[1].value) || 0;
+        total += d * r;
+      });
+      return total;
+    }
+
+    function subTotal() {
+      let total = 0;
+      document.querySelectorAll('#sub-body tr').forEach(tr => {
+        const cells = tr.querySelectorAll('input[type=number]');
+        if (!cells.length) return;
+        total += parseFloat(cells[0].value) || 0;
+      });
+      return total;
+    }
+
+    function calculate() {
+      const lab = laborTotal();
+      const mat = materialsTotal();
+      const eqp = equipmentTotal();
+      const sub = subTotal();
+      const subtotal = lab + mat + eqp + sub;
+
+      const ovhPct = parseFloat(document.getElementById('overhead-pct').value) || 0;
+      const conPct = parseFloat(document.getElementById('contingency-pct').value) || 0;
+      const proPct = parseFloat(document.getElementById('profit-pct').value) || 0;
+
+      const overhead    = subtotal * (ovhPct / 100);
+      const contingency = (subtotal + overhead) * (conPct / 100);
+      const profit      = (subtotal + overhead + contingency) * (proPct / 100);
+      const finalTotal  = subtotal + overhead + contingency + profit;
+
+      // Section badges
+      document.getElementById('labor-badge').textContent     = fmt(lab);
+      document.getElementById('materials-badge').textContent = fmt(mat);
+      document.getElementById('equipment-badge').textContent = fmt(eqp);
+      document.getElementById('sub-badge').textContent       = fmt(sub);
+
+      // Adjustment computed values
+      document.getElementById('overhead-val').textContent    = fmt(overhead);
+      document.getElementById('contingency-val').textContent = fmt(contingency);
+      document.getElementById('profit-val').textContent      = fmt(profit);
+
+      // Summary sidebar
+      document.getElementById('sum-labor').textContent       = fmt(lab);
+      document.getElementById('sum-materials').textContent   = fmt(mat);
+      document.getElementById('sum-equipment').textContent   = fmt(eqp);
+      document.getElementById('sum-sub').textContent         = fmt(sub);
+      document.getElementById('sum-subtotal').textContent    = fmt(subtotal);
+      document.getElementById('sum-ovh-pct').textContent     = ovhPct;
+      document.getElementById('sum-con-pct').textContent     = conPct;
+      document.getElementById('sum-pro-pct').textContent     = proPct;
+      document.getElementById('sum-overhead').textContent    = fmt(overhead);
+      document.getElementById('sum-contingency').textContent = fmt(contingency);
+      document.getElementById('sum-profit').textContent      = fmt(profit);
+      document.getElementById('sum-total').textContent       = fmt(finalTotal);
+    }
+
+    function syncSummaryHeader() {
+      const name = document.getElementById('customer-name').value.trim();
+      const date = document.getElementById('est-date').value;
+      document.getElementById('sum-customer').textContent = name || '—';
+      if (date) {
+        const d = new Date(date + 'T00:00:00');
+        document.getElementById('sum-date').textContent = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+      } else {
+        document.getElementById('sum-date').textContent = '';
+      }
+    }
+
+    /* =========================================================
+       LOCALSTORAGE SAVE / LOAD
+    ========================================================= */
+    const STORAGE_KEY = 'sandoval_estimate_v2';
+    let saveTimer = null;
+
+    function autoSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(persistData, 600);
+    }
+
+    function persistData() {
+      const data = {
+        info: {
+          customerName: document.getElementById('customer-name').value,
+          estNumber:    document.getElementById('est-number').value,
+          address:      document.getElementById('project-address').value,
+          type:         document.getElementById('project-type').value,
+          date:         document.getElementById('est-date').value,
+          description:  document.getElementById('project-description').value,
+          notes:        document.getElementById('est-notes').value,
+        },
+        adjustments: {
+          overhead:    document.getElementById('overhead-pct').value,
+          contingency: document.getElementById('contingency-pct').value,
+          profit:      document.getElementById('profit-pct').value,
+        },
+        labor:     serializeSection('labor-body', 'labor'),
+        materials: serializeSection('materials-body', 'materials'),
+        equipment: serializeSection('equipment-body', 'equipment'),
+        subs:      serializeSection('sub-body', 'subs'),
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        flashSaved();
+      } catch(e) {}
+    }
+
+    function serializeSection(bodyId, type) {
+      const rows = [];
+      document.querySelectorAll(`#${bodyId} tr`).forEach(tr => {
+        const sel  = tr.querySelector('select');
+        const inp  = tr.querySelector('input[type=text]');
+        const nums = tr.querySelectorAll('input[type=number]');
+        const isCustom = sel && sel.value === 'custom';
+        const name = isCustom ? (inp ? inp.value : '') : (sel ? sel.value : '');
+
+        if (type === 'labor') {
+          rows.push({ role: name, isCustom, hours: nums[0]?.value, rate: nums[1]?.value, crew: nums[2]?.value });
+        } else if (type === 'materials') {
+          rows.push({ item: name, isCustom, qty: nums[0]?.value, unitCost: nums[1]?.value, waste: nums[2]?.value });
+        } else if (type === 'equipment') {
+          rows.push({ name, isCustom, days: nums[0]?.value, dailyRate: nums[1]?.value });
+        } else if (type === 'subs') {
+          rows.push({ trade: name, isCustom, cost: nums[0]?.value });
+        }
+      });
+      return rows;
+    }
+
+    function flashSaved() {
+      const ind = document.getElementById('save-indicator');
+      ind.style.background = '#dcfce7';
+    }
+
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+
+        // Info
+        if (data.info) {
+          document.getElementById('customer-name').value    = data.info.customerName || '';
+          document.getElementById('est-number').value      = data.info.estNumber || '';
+          document.getElementById('project-address').value = data.info.address || '';
+          document.getElementById('project-type').value    = data.info.type || '';
+          document.getElementById('est-date').value        = data.info.date || '';
+          document.getElementById('project-description').value = data.info.description || '';
+          document.getElementById('est-notes').value       = data.info.notes || '';
+        }
+
+        // Adjustments
+        if (data.adjustments) {
+          document.getElementById('overhead-pct').value    = data.adjustments.overhead ?? 15;
+          document.getElementById('contingency-pct').value = data.adjustments.contingency ?? 7;
+          document.getElementById('profit-pct').value      = data.adjustments.profit ?? 20;
+        }
+
+        // Rows
+        (data.labor || []).forEach(r => addLaborRow({
+          role: r.isCustom ? r.role : r.role, isCustomRole: r.isCustom,
+          hours: r.hours, rate: r.rate, crew: r.crew
+        }));
+        (data.materials || []).forEach(r => addMaterialRow({
+          item: r.item, isCustomItem: r.isCustom,
+          qty: r.qty, unitCost: r.unitCost, waste: r.waste
+        }));
+        (data.equipment || []).forEach(r => addEquipmentRow({
+          name: r.name, isCustomName: r.isCustom,
+          days: r.days, dailyRate: r.dailyRate
+        }));
+        (data.subs || []).forEach(r => addSubRow({
+          trade: r.trade, isCustomTrade: r.isCustom, cost: r.cost
+        }));
+
+        syncSummaryHeader();
+        calculate();
+        return true;
+      } catch(e) { return false; }
+    }
+
+    /* =========================================================
+       RESET
+    ========================================================= */
+    function resetForm() {
+      if (!confirm('Reset the entire estimate? This cannot be undone.')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      // Clear info
+      ['customer-name','est-number','project-address','project-description','est-notes'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('project-type').value = '';
+      document.getElementById('est-date').value = '';
+      document.getElementById('overhead-pct').value    = '15';
+      document.getElementById('contingency-pct').value = '7';
+      document.getElementById('profit-pct').value      = '20';
+      // Clear rows
+      ['labor-body','materials-body','equipment-body','sub-body'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+      });
+      syncSummaryHeader();
+      calculate();
+    }
+
+    /* =========================================================
+       MOBILE NAV TOGGLE
+    ========================================================= */
+    document.getElementById('nav-toggle').addEventListener('click', function() {
+      const menu = document.getElementById('nav-menu');
+      const expanded = this.getAttribute('aria-expanded') === 'true';
+      menu.classList.toggle('open');
+      this.setAttribute('aria-expanded', !expanded);
+    });
+
+    /* =========================================================
+       INIT
+    ========================================================= */
+    (function init() {
+      const loaded = loadData();
+      if (!loaded) {
+        // Start with one empty row in each section for UX
+        addLaborRow();
+        addMaterialRow();
+        addEquipmentRow();
+        addSubRow();
+      }
+      // Set today's date if blank
+      const dateEl = document.getElementById('est-date');
+      if (!dateEl.value) {
+        dateEl.value = new Date().toISOString().split('T')[0];
+        syncSummaryHeader();
+      }
+    })();
+  </script>
+
+</body>
+</html>
