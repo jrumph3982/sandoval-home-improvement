@@ -264,35 +264,142 @@
       50% { opacity: 0.4; }
     }
 
-    /* Print-only header (hidden on screen) */
-    .print-header { display: none; }
-    /* Waste column always visible on screen */
-    .waste-col { }
-    /* PM&O grouped row hidden on screen, shown in print */
+    /* PM&O grouped row — hidden on screen */
     .print-pm-row { display: none !important; }
+    /* Print render area — hidden on screen */
+    #print-view { display: none; }
 
-    /* Print styles */
+    /* ================================================================
+       PRINT STYLES — dedicated clean single-page estimate document
+    ================================================================ */
     @media print {
-      .no-print { display: none !important; }
-      #mobile-call-sticky { display: none !important; }
-      body { padding-bottom: 0 !important; background: white !important; }
-      main { padding: 0 !important; }
-      .est-card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; page-break-inside: avoid; }
-      .summary-sidebar { display: block !important; width: 100% !important; }
-      .summary-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .final-row { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .section-total { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .est-card-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .lg\:flex-row { flex-direction: column !important; }
-      /* Show print-only header */
-      .print-header { display: block !important; }
-      /* Hide waste column in materials table */
-      .waste-col { display: none !important; }
-      /* Group overhead/contingency/profit — hide individuals, show combined */
-      .sum-adj-individual { display: none !important; }
-      .print-pm-row { display: flex !important; }
-      /* Hide the adjustments form card (percentages not needed on printout) */
-      .adj-section { display: none !important; }
+      @page { margin: 0.42in; size: letter portrait; }
+
+      /* Hide all screen UI — only #print-view renders */
+      body > header, body > footer, body > main,
+      body > a, body > div:not(#print-view) { display: none !important; }
+      body {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      #print-view {
+        display: block !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 9pt;
+        color: #1e293b;
+        line-height: 1.4;
+      }
+
+      /* ── Letterhead ── */
+      .pv-letterhead {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 9pt;
+        border-bottom: 3pt solid #0f172a;
+        margin-bottom: 9pt;
+      }
+      .pv-logo-block { display: flex; align-items: center; gap: 9pt; }
+      .pv-logo { height: 36pt; width: auto; }
+      .pv-company-name {
+        font-size: 11.5pt; font-weight: 900; color: #0f172a;
+        text-transform: uppercase; letter-spacing: 0.04em;
+      }
+      .pv-company-sub { font-size: 7pt; color: #64748b; margin-top: 2pt; }
+      .pv-est-badge { text-align: right; }
+      .pv-est-label {
+        font-size: 6.5pt; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.12em; color: #ea580c;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .pv-est-num { font-size: 13pt; font-weight: 900; color: #0f172a; }
+      .pv-est-date { font-size: 7.5pt; color: #64748b; margin-top: 1.5pt; }
+
+      /* ── Customer block ── */
+      .pv-customer-block {
+        border-left: 3.5pt solid #ea580c;
+        padding: 7pt 12pt;
+        background: #f8fafc;
+        margin-bottom: 9pt;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .pv-prepared-for {
+        font-size: 6.5pt; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.1em; color: #ea580c; margin-bottom: 3pt;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .pv-cust-name { font-size: 11pt; font-weight: 800; color: #0f172a; }
+      .pv-cust-detail { font-size: 8pt; color: #475569; margin-top: 1.5pt; }
+
+      /* ── Cost sections ── */
+      .pv-section {
+        margin-bottom: 6pt;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .pv-section-header {
+        background: #0f172a;
+        color: white;
+        font-size: 7pt; font-weight: 800;
+        text-transform: uppercase; letter-spacing: 0.1em;
+        padding: 3.5pt 8pt;
+        display: flex; justify-content: space-between; align-items: center;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .pv-sh-total { font-size: 8.5pt; font-weight: 900; font-variant-numeric: tabular-nums; }
+
+      .pv-table { width: 100%; border-collapse: collapse; }
+      .pv-table tr { border-bottom: 0.5pt solid #f1f5f9; }
+      .pv-table tr:last-child { border-bottom: none; }
+      .pv-table td { padding: 3pt 8pt; font-size: 8pt; color: #1e293b; vertical-align: middle; }
+      .pv-td-detail { color: #64748b !important; font-size: 7.5pt !important; }
+      .pv-td-amt { text-align: right; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+      .pv-scope-text, .pv-notes-text {
+        font-size: 8pt; color: #374151; line-height: 1.55;
+        padding: 5pt 8pt;
+        border: 0.5pt solid #e2e8f0; border-top: none;
+        background: #fafafa;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+
+      /* ── Summary block ── */
+      .pv-summary {
+        margin-top: 7pt;
+        break-inside: avoid; page-break-inside: avoid;
+        border: 0.5pt solid #e2e8f0;
+      }
+      .pv-sum-row {
+        display: flex; justify-content: space-between;
+        padding: 3.5pt 12pt; font-size: 8.5pt;
+        border-bottom: 0.5pt solid #f1f5f9;
+      }
+      .pv-sum-label { color: #64748b; }
+      .pv-sum-val { font-weight: 700; font-variant-numeric: tabular-nums; }
+      .pv-subtotal-row {
+        background: #f1f5f9; font-weight: 700;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .pv-subtotal-row .pv-sum-label { color: #0f172a; }
+      .pv-total-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 7pt 12pt;
+        background: #ea580c; color: white;
+        font-size: 11pt; font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+
+      /* ── Footer ── */
+      .pv-footer {
+        margin-top: 7pt; text-align: center;
+        font-size: 6.5pt; color: #94a3b8;
+        border-top: 0.5pt solid #e2e8f0; padding-top: 5pt;
+      }
     }
   </style>
 </head>
@@ -711,6 +818,9 @@
 
     </div><!-- /two-col flex -->
   </main>
+
+  <!-- Print render area (populated by JS before printing) -->
+  <div id="print-view"></div>
 
   <!-- ===== FOOTER ===== -->
   <footer class="site-footer text-gray-400 pt-14 pb-8 no-print">
@@ -1414,15 +1524,19 @@
       const div2 = '═'.repeat(52);
       let body = '';
 
+      // Header — mirrors the print document layout
       body += (customer !== '(No name)' ? customer + ' \u2014 ' : '') + 'Project Estimate\n';
+      body += div2 + '\n';
       body += 'Sandoval Home Improvement\n';
+      body += 'Licensed & Insured  |  Northern Virginia, DC & Maryland\n';
       body += '703-937-7579  |  sandovalhomeimprovement@yahoo.com\n';
-      body += div2 + '\n\n';
+      body += div + '\n';
       body += 'Estimate #:    ' + estNum + '\n';
       body += 'Date:          ' + dateStr + '\n';
-      body += 'Customer:      ' + customer + '\n';
+      body += 'Prepared for:  ' + customer + '\n';
       body += 'Address:       ' + address + '\n';
       body += 'Project Type:  ' + projType + '\n';
+      body += div2 + '\n';
       if (desc) { body += '\nScope of Work:\n' + desc + '\n'; }
 
       // ── LABOR ──
@@ -1560,6 +1674,209 @@
 
       window.location.href = mailto;
     }
+
+    /* =========================================================
+       BUILD PRINT VIEW
+       Generates a clean customer-facing document from form data,
+       inserted into #print-view just before the browser prints.
+    ========================================================= */
+    function buildPrintView() {
+      const customer = document.getElementById('customer-name').value.trim();
+      const address  = document.getElementById('project-address').value.trim();
+      const estNum   = document.getElementById('est-number').value.trim();
+      const projType = document.getElementById('project-type').value;
+      const dateVal  = document.getElementById('est-date').value;
+      const desc     = document.getElementById('project-description').value.trim();
+      const notes    = document.getElementById('est-notes').value.trim();
+
+      const dateStr = dateVal
+        ? new Date(dateVal + 'T00:00:00').toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' })
+        : '';
+
+      // ── Collect non-zero rows ──
+      const laborData = [];
+      document.querySelectorAll('#labor-body tr').forEach(tr => {
+        const name = getRowName(tr);
+        const nums = tr.querySelectorAll('input[type=number]');
+        if (!nums.length) return;
+        const h = parseFloat(nums[0].value) || 0;
+        const r = parseFloat(nums[1].value) || 0;
+        const c = parseFloat(nums[2].value) || 1;
+        const t = h * r * c;
+        if (!t) return;
+        laborData.push({ name: name || '—', h, r, c, t });
+      });
+
+      const matData = [];
+      document.querySelectorAll('#materials-body tr').forEach(tr => {
+        const name = getRowName(tr);
+        const nums = tr.querySelectorAll('input[type=number]');
+        if (!nums.length) return;
+        const q  = parseFloat(nums[0].value) || 0;
+        const uc = parseFloat(nums[1].value) || 0;
+        const w  = parseFloat(nums[2].value) || 0;
+        const t  = q * (1 + w / 100) * uc;
+        if (!t) return;
+        matData.push({ name: name || '—', q, uc, t });
+      });
+
+      const eqpData = [];
+      document.querySelectorAll('#equipment-body tr').forEach(tr => {
+        const name = getRowName(tr);
+        const nums = tr.querySelectorAll('input[type=number]');
+        if (!nums.length) return;
+        const d = parseFloat(nums[0].value) || 0;
+        const r = parseFloat(nums[1].value) || 0;
+        const t = d * r;
+        if (!t) return;
+        eqpData.push({ name: name || '—', d, r, t });
+      });
+
+      const subData = [];
+      document.querySelectorAll('#sub-body tr').forEach(tr => {
+        const name = getRowName(tr);
+        const nums = tr.querySelectorAll('input[type=number]');
+        if (!nums.length) return;
+        const t = parseFloat(nums[0].value) || 0;
+        if (!t) return;
+        subData.push({ name: name || '—', t });
+      });
+
+      // ── Pull computed totals from the live summary ──
+      function readAmt(id) { return parseFloat(document.getElementById(id).textContent.replace(/[$,]/g,'')) || 0; }
+      const labTotal  = readAmt('sum-labor');
+      const matTotal  = readAmt('sum-materials');
+      const eqpTotal  = readAmt('sum-equipment');
+      const subTotal  = readAmt('sum-sub');
+      const subtotal  = readAmt('sum-subtotal');
+      const pmo       = readAmt('sum-pmo');
+      const grandTotal = readAmt('sum-total');
+
+      // ── Build HTML ──
+      let h = '';
+
+      // LETTERHEAD
+      h += '<div class="pv-letterhead">';
+      h +=   '<div class="pv-logo-block">';
+      h +=     '<img src="assets/logo.png" class="pv-logo" alt="Sandoval Home Improvement">';
+      h +=     '<div>';
+      h +=       '<div class="pv-company-name">Sandoval Home Improvement</div>';
+      h +=       '<div class="pv-company-sub">Licensed &amp; Insured &bull; Northern Virginia &middot; DC &middot; Maryland</div>';
+      h +=       '<div class="pv-company-sub">703-937-7579 &bull; sandovalhomeimprovement@yahoo.com</div>';
+      h +=     '</div>';
+      h +=   '</div>';
+      h +=   '<div class="pv-est-badge">';
+      h +=     '<div class="pv-est-label">Project Estimate</div>';
+      h +=     (estNum ? '<div class="pv-est-num">#' + esc(estNum) + '</div>' : '');
+      h +=     (dateStr ? '<div class="pv-est-date">' + dateStr + '</div>' : '');
+      h +=   '</div>';
+      h += '</div>';
+
+      // CUSTOMER BLOCK
+      h += '<div class="pv-customer-block">';
+      h +=   '<div class="pv-prepared-for">Prepared For</div>';
+      h +=   '<div class="pv-cust-name">' + esc(customer || '—') + '</div>';
+      if (address)  h += '<div class="pv-cust-detail">' + esc(address) + '</div>';
+      if (projType) h += '<div class="pv-cust-detail" style="margin-top:4pt;font-style:italic;">' + esc(projType) + '</div>';
+      h += '</div>';
+
+      // SCOPE OF WORK
+      if (desc) {
+        h += '<div class="pv-section">';
+        h +=   '<div class="pv-section-header"><span>Scope of Work</span></div>';
+        h +=   '<div class="pv-scope-text">' + esc(desc).replace(/\n/g,'<br>') + '</div>';
+        h += '</div>';
+      }
+
+      // LABOR
+      if (laborData.length) {
+        h += '<div class="pv-section">';
+        h +=   '<div class="pv-section-header"><span>Labor</span><span class="pv-sh-total">' + fmt(labTotal) + '</span></div>';
+        h +=   '<table class="pv-table">';
+        laborData.forEach(row => {
+          const detail = row.h + ' hrs &times; $' + row.r.toFixed(2) + '/hr'
+            + (row.c > 1 ? ' &times; ' + row.c + ' crew' : '');
+          h += '<tr><td>' + esc(row.name) + '</td><td class="pv-td-detail">' + detail + '</td><td class="pv-td-amt">' + fmt(row.t) + '</td></tr>';
+        });
+        h +=   '</table>';
+        h += '</div>';
+      }
+
+      // MATERIALS
+      if (matData.length) {
+        h += '<div class="pv-section">';
+        h +=   '<div class="pv-section-header"><span>Materials</span><span class="pv-sh-total">' + fmt(matTotal) + '</span></div>';
+        h +=   '<table class="pv-table">';
+        matData.forEach(row => {
+          const detail = row.q + ' qty &times; $' + row.uc.toFixed(2) + ' each';
+          h += '<tr><td>' + esc(row.name) + '</td><td class="pv-td-detail">' + detail + '</td><td class="pv-td-amt">' + fmt(row.t) + '</td></tr>';
+        });
+        h +=   '</table>';
+        h += '</div>';
+      }
+
+      // EQUIPMENT
+      if (eqpData.length) {
+        h += '<div class="pv-section">';
+        h +=   '<div class="pv-section-header"><span>Equipment &amp; Rentals</span><span class="pv-sh-total">' + fmt(eqpTotal) + '</span></div>';
+        h +=   '<table class="pv-table">';
+        eqpData.forEach(row => {
+          const detail = row.d + ' day' + (row.d !== 1 ? 's' : '') + ' &times; $' + row.r.toFixed(2) + '/day';
+          h += '<tr><td>' + esc(row.name) + '</td><td class="pv-td-detail">' + detail + '</td><td class="pv-td-amt">' + fmt(row.t) + '</td></tr>';
+        });
+        h +=   '</table>';
+        h += '</div>';
+      }
+
+      // SUBCONTRACTORS
+      if (subData.length) {
+        h += '<div class="pv-section">';
+        h +=   '<div class="pv-section-header"><span>Subcontractors</span><span class="pv-sh-total">' + fmt(subTotal) + '</span></div>';
+        h +=   '<table class="pv-table">';
+        subData.forEach(row => {
+          h += '<tr><td colspan="2">' + esc(row.name) + '</td><td class="pv-td-amt">' + fmt(row.t) + '</td></tr>';
+        });
+        h +=   '</table>';
+        h += '</div>';
+      }
+
+      // SUMMARY
+      h += '<div class="pv-summary">';
+      h +=   '<div class="pv-sum-row pv-subtotal-row"><span class="pv-sum-label">Subtotal</span><span class="pv-sum-val">' + fmt(subtotal) + '</span></div>';
+      if (pmo > 0) {
+        h += '<div class="pv-sum-row"><span class="pv-sum-label">Project Management &amp; Operational Costs</span><span class="pv-sum-val">' + fmt(pmo) + '</span></div>';
+      }
+      h +=   '<div class="pv-total-row"><span>TOTAL ESTIMATE</span><span>' + fmt(grandTotal) + '</span></div>';
+      h += '</div>';
+
+      // NOTES & TERMS
+      if (notes) {
+        h += '<div class="pv-section" style="margin-top:7pt;">';
+        h +=   '<div class="pv-section-header"><span>Notes &amp; Terms</span></div>';
+        h +=   '<div class="pv-notes-text">' + esc(notes).replace(/\n/g,'<br>') + '</div>';
+        h += '</div>';
+      }
+
+      // FOOTER
+      h += '<div class="pv-footer">';
+      h +=   'Thank you for choosing Sandoval Home Improvement &bull; This estimate is valid for 30 days from the date issued';
+      h += '</div>';
+
+      document.getElementById('print-view').innerHTML = h;
+    }
+
+    // Escape HTML special chars for safe text insertion
+    function esc(str) {
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Hook into browser print lifecycle
+    window.addEventListener('beforeprint', buildPrintView);
+    window.addEventListener('afterprint', function() {
+      document.getElementById('print-view').innerHTML = '';
+    });
 
     /* =========================================================
        RESET
