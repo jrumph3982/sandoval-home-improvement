@@ -351,6 +351,10 @@
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           Reset
         </button>
+        <button class="action-btn" style="background:#2563eb;color:white;" onclick="sendEmail()">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          Email Estimate
+        </button>
         <button class="action-btn" style="background:#0f172a;color:white;" onclick="window.print()">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
           Print Estimate
@@ -407,6 +411,10 @@
               <div class="form-group">
                 <label for="est-date">Estimate Date</label>
                 <input type="date" id="est-date" class="est-input" oninput="syncSummaryHeader(); autoSave()">
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label for="customer-email">Customer Email</label>
+                <input type="email" id="customer-email" class="est-input" placeholder="customer@example.com" oninput="autoSave()">
               </div>
               <div class="form-group" style="grid-column:1/-1">
                 <label for="project-description">Project Description / Scope of Work</label>
@@ -648,6 +656,10 @@
           </div>
 
           <div class="mt-3 space-y-2 no-print">
+            <button onclick="sendEmail()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors text-sm">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              Email Estimate
+            </button>
             <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-600 text-white rounded-lg font-bold hover:bg-orange-700 transition-colors text-sm">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
               Print Estimate
@@ -1223,13 +1235,14 @@
     function persistData() {
       const data = {
         info: {
-          customerName: document.getElementById('customer-name').value,
-          estNumber:    document.getElementById('est-number').value,
-          address:      document.getElementById('project-address').value,
-          type:         document.getElementById('project-type').value,
-          date:         document.getElementById('est-date').value,
-          description:  document.getElementById('project-description').value,
-          notes:        document.getElementById('est-notes').value,
+          customerName:  document.getElementById('customer-name').value,
+          customerEmail: document.getElementById('customer-email').value,
+          estNumber:     document.getElementById('est-number').value,
+          address:       document.getElementById('project-address').value,
+          type:          document.getElementById('project-type').value,
+          date:          document.getElementById('est-date').value,
+          description:   document.getElementById('project-description').value,
+          notes:         document.getElementById('est-notes').value,
         },
         adjustments: {
           overhead:    document.getElementById('overhead-pct').value,
@@ -1283,6 +1296,7 @@
         // Info
         if (data.info) {
           document.getElementById('customer-name').value    = data.info.customerName || '';
+          document.getElementById('customer-email').value  = data.info.customerEmail || '';
           document.getElementById('est-number').value      = data.info.estNumber || '';
           document.getElementById('project-address').value = data.info.address || '';
           document.getElementById('project-type').value    = data.info.type || '';
@@ -1322,13 +1336,193 @@
     }
 
     /* =========================================================
+       EMAIL ESTIMATE
+    ========================================================= */
+    function getRowName(tr) {
+      const sel = tr.querySelector('select');
+      const inp = tr.querySelector('input[type=text]');
+      if (sel && sel.value === 'custom') return inp ? inp.value.trim() : '';
+      return sel ? sel.value.trim() : '';
+    }
+
+    function generateEmailBody() {
+      const customer  = document.getElementById('customer-name').value.trim() || '(No name)';
+      const address   = document.getElementById('project-address').value.trim() || '(No address)';
+      const estNum    = document.getElementById('est-number').value.trim() || '—';
+      const projType  = document.getElementById('project-type').value || '—';
+      const dateVal   = document.getElementById('est-date').value;
+      const desc      = document.getElementById('project-description').value.trim();
+      const notes     = document.getElementById('est-notes').value.trim();
+
+      const dateStr = dateVal
+        ? new Date(dateVal + 'T00:00:00').toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' })
+        : '—';
+
+      const div  = '─'.repeat(52);
+      const div2 = '═'.repeat(52);
+      let body = '';
+
+      body += 'PROJECT ESTIMATE\n';
+      body += 'Sandoval Home Improvement\n';
+      body += '703-937-7579  |  sandovalhomeimprovement@yahoo.com\n';
+      body += div2 + '\n\n';
+      body += 'Estimate #:    ' + estNum + '\n';
+      body += 'Date:          ' + dateStr + '\n';
+      body += 'Customer:      ' + customer + '\n';
+      body += 'Address:       ' + address + '\n';
+      body += 'Project Type:  ' + projType + '\n';
+      if (desc) { body += '\nScope of Work:\n' + desc + '\n'; }
+
+      // ── LABOR ──
+      const laborRows = [];
+      document.querySelectorAll('#labor-body tr').forEach(tr => {
+        const name  = getRowName(tr);
+        const nums  = tr.querySelectorAll('input[type=number]');
+        if (!nums.length) return;
+        const h = parseFloat(nums[0].value) || 0;
+        const r = parseFloat(nums[1].value) || 0;
+        const c = parseFloat(nums[2].value) || 1;
+        const t = h * r * c;
+        if (!name && !t) return;
+        laborRows.push({ name: name || '—', h, r, c, t });
+      });
+      if (laborRows.length) {
+        body += '\n' + div + '\nLABOR\n' + div + '\n';
+        laborRows.forEach(row => {
+          const label = (row.name + ' ').padEnd(22, ' ');
+          const detail = (row.h + ' hrs x $' + row.r.toFixed(2) + '/hr x ' + row.c + ' crew').padEnd(28, ' ');
+          body += label + detail + fmt(row.t) + '\n';
+        });
+        body += ' '.repeat(50) + div.slice(0,20) + '\n';
+        body += 'Labor Total:'.padStart(50) + '  ' + document.getElementById('sum-labor').textContent + '\n';
+      }
+
+      // ── MATERIALS ──
+      const matRows = [];
+      document.querySelectorAll('#materials-body tr').forEach(tr => {
+        const name = getRowName(tr);
+        const nums = tr.querySelectorAll('input[type=number]');
+        if (!nums.length) return;
+        const q  = parseFloat(nums[0].value) || 0;
+        const uc = parseFloat(nums[1].value) || 0;
+        const w  = parseFloat(nums[2].value) || 0;
+        const t  = q * (1 + w / 100) * uc;
+        if (!name && !t) return;
+        matRows.push({ name: name || '—', q, uc, w, t });
+      });
+      if (matRows.length) {
+        body += '\n' + div + '\nMATERIALS\n' + div + '\n';
+        matRows.forEach(row => {
+          const label  = (row.name + ' ').padEnd(22, ' ');
+          const detail = (row.q + ' qty @ $' + row.uc.toFixed(2) + (row.w ? ' +' + row.w + '% waste' : '')).padEnd(28, ' ');
+          body += label + detail + fmt(row.t) + '\n';
+        });
+        body += 'Materials Total:'.padStart(50) + '  ' + document.getElementById('sum-materials').textContent + '\n';
+      }
+
+      // ── EQUIPMENT ──
+      const eqpRows = [];
+      document.querySelectorAll('#equipment-body tr').forEach(tr => {
+        const name = getRowName(tr);
+        const nums = tr.querySelectorAll('input[type=number]');
+        if (!nums.length) return;
+        const d = parseFloat(nums[0].value) || 0;
+        const r = parseFloat(nums[1].value) || 0;
+        const t = d * r;
+        if (!name && !t) return;
+        eqpRows.push({ name: name || '—', d, r, t });
+      });
+      if (eqpRows.length) {
+        body += '\n' + div + '\nEQUIPMENT & RENTALS\n' + div + '\n';
+        eqpRows.forEach(row => {
+          const label  = (row.name + ' ').padEnd(22, ' ');
+          const detail = (row.d + ' days x $' + row.r.toFixed(2) + '/day').padEnd(28, ' ');
+          body += label + detail + fmt(row.t) + '\n';
+        });
+        body += 'Equipment Total:'.padStart(50) + '  ' + document.getElementById('sum-equipment').textContent + '\n';
+      }
+
+      // ── SUBCONTRACTORS ──
+      const subRows = [];
+      document.querySelectorAll('#sub-body tr').forEach(tr => {
+        const name = getRowName(tr);
+        const nums = tr.querySelectorAll('input[type=number]');
+        if (!nums.length) return;
+        const t = parseFloat(nums[0].value) || 0;
+        if (!name && !t) return;
+        subRows.push({ name: name || '—', t });
+      });
+      if (subRows.length) {
+        body += '\n' + div + '\nSUBCONTRACTORS\n' + div + '\n';
+        subRows.forEach(row => {
+          body += (row.name + ' ').padEnd(48, ' ') + fmt(row.t) + '\n';
+        });
+        body += 'Subcontractor Total:'.padStart(50) + '  ' + document.getElementById('sum-sub').textContent + '\n';
+      }
+
+      // ── SUMMARY ──
+      const ovhPct = document.getElementById('overhead-pct').value;
+      const conPct = document.getElementById('contingency-pct').value;
+      const proPct = document.getElementById('profit-pct').value;
+
+      body += '\n' + div2 + '\nESTIMATE SUMMARY\n' + div2 + '\n';
+      body += 'Labor:                       ' + document.getElementById('sum-labor').textContent + '\n';
+      body += 'Materials:                   ' + document.getElementById('sum-materials').textContent + '\n';
+      body += 'Equipment:                   ' + document.getElementById('sum-equipment').textContent + '\n';
+      body += 'Subcontractors:              ' + document.getElementById('sum-sub').textContent + '\n';
+      body += div + '\n';
+      body += 'Subtotal:                    ' + document.getElementById('sum-subtotal').textContent + '\n';
+      body += 'Overhead (' + ovhPct + '%):              ' + document.getElementById('sum-overhead').textContent + '\n';
+      body += 'Contingency (' + conPct + '%):           ' + document.getElementById('sum-contingency').textContent + '\n';
+      body += 'Profit (' + proPct + '%):                ' + document.getElementById('sum-profit').textContent + '\n';
+      body += div2 + '\n';
+      body += 'TOTAL ESTIMATE:              ' + document.getElementById('sum-total').textContent + '\n';
+      body += div2 + '\n';
+
+      if (notes) {
+        body += '\nNOTES & TERMS:\n' + notes + '\n';
+      }
+
+      body += '\n' + div + '\n';
+      body += 'This estimate is prepared by Sandoval Home Improvement.\n';
+      body += 'Licensed & Insured | VA, DC & MD | sandovalhomeimprovement@yahoo.com\n';
+      body += 'Questions? Call us at 703-937-7579 (Mon-Sat 7am-7pm)\n';
+
+      return body;
+    }
+
+    function sendEmail() {
+      const toEmail  = document.getElementById('customer-email').value.trim();
+      const customer = document.getElementById('customer-name').value.trim();
+      const estNum   = document.getElementById('est-number').value.trim();
+
+      // Build subject line
+      let subject = 'Project Estimate – Sandoval Home Improvement';
+      if (customer) subject = 'Estimate for ' + customer + ' – Sandoval Home Improvement';
+      if (estNum)   subject = '[' + estNum + '] ' + subject;
+
+      const body = generateEmailBody();
+
+      // mailto: max URL length is ~2000 chars in some clients; warn if huge
+      const mailto = 'mailto:' + encodeURIComponent(toEmail)
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body='    + encodeURIComponent(body);
+
+      if (mailto.length > 8000) {
+        alert('The estimate is very long. Your email client may truncate the body. Consider printing instead, or breaking it into sections.');
+      }
+
+      window.location.href = mailto;
+    }
+
+    /* =========================================================
        RESET
     ========================================================= */
     function resetForm() {
       if (!confirm('Reset the entire estimate? This cannot be undone.')) return;
       localStorage.removeItem(STORAGE_KEY);
       // Clear info
-      ['customer-name','est-number','project-address','project-description','est-notes'].forEach(id => {
+      ['customer-name','customer-email','est-number','project-address','project-description','est-notes'].forEach(id => {
         document.getElementById(id).value = '';
       });
       document.getElementById('project-type').value = '';
