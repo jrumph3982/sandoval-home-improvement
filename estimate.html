@@ -269,6 +269,145 @@
     /* Print render area — hidden on screen */
     #print-view { display: none; }
 
+    /* ===== ESTIMATES LIBRARY DRAWER ===== */
+    .lib-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .lib-overlay.open { opacity: 1; pointer-events: all; }
+
+    .lib-drawer {
+      position: fixed; top: 0; right: -440px; bottom: 0;
+      width: 420px; max-width: 100vw;
+      background: white; z-index: 2001;
+      display: flex; flex-direction: column;
+      box-shadow: -6px 0 30px rgba(0,0,0,0.18);
+      transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .lib-drawer.open { right: 0; }
+    @media (max-width: 480px) { .lib-drawer { width: 100vw; } }
+
+    .lib-drawer-header {
+      background: #0f172a; color: white;
+      padding: 1rem 1.25rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .lib-drawer-title {
+      font-size: 0.82rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.09em;
+    }
+    .lib-close-btn {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(255,255,255,0.1); border: none;
+      color: white; font-size: 1.15rem; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .lib-close-btn:hover { background: #ea580c; }
+
+    .lib-toolbar {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex; gap: 0.5rem; flex-shrink: 0; flex-wrap: wrap;
+    }
+    .lib-body { flex: 1; overflow-y: auto; padding: 1rem 1.25rem; }
+
+    .lib-empty {
+      text-align: center; padding: 3rem 1rem;
+      color: #94a3b8; font-size: 0.875rem;
+    }
+    .lib-empty-icon { margin: 0 auto 0.75rem; opacity: 0.35; display: block; }
+
+    .lib-card {
+      border: 1.5px solid #e2e8f0; border-radius: 0.6rem;
+      padding: 0.85rem 1rem; margin-bottom: 0.7rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .lib-card:hover { border-color: #cbd5e1; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+    .lib-card-active { border-color: #ea580c !important; background: #fff7ed; }
+    .lib-card-badge {
+      font-size: 0.62rem; font-weight: 700; color: #ea580c;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem;
+    }
+    .lib-card-name { font-weight: 800; font-size: 0.875rem; color: #0f172a; }
+    .lib-card-customer { font-size: 0.76rem; color: #64748b; margin-top: 0.12rem; }
+    .lib-card-total { font-size: 1rem; font-weight: 900; color: #ea580c; margin-top: 0.3rem; font-variant-numeric: tabular-nums; }
+    .lib-card-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 0.1rem; }
+    .lib-card-actions { display: flex; gap: 0.4rem; margin-top: 0.6rem; flex-wrap: wrap; }
+
+    .lib-btn {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.28rem 0.7rem;
+      border-radius: 0.35rem; font-size: 0.7rem; font-weight: 700;
+      cursor: pointer; border: none; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .lib-btn-load  { background: #0f172a; color: white; }
+    .lib-btn-load:hover  { background: #1e293b; }
+    .lib-btn-export { background: #f1f5f9; color: #475569; }
+    .lib-btn-export:hover { background: #e2e8f0; }
+    .lib-btn-delete { background: #fee2e2; color: #dc2626; }
+    .lib-btn-delete:hover { background: #fca5a5; }
+    .lib-btn-import { background: #f0fdf4; color: #16a34a; border: 1.5px solid #bbf7d0; }
+    .lib-btn-import:hover { background: #dcfce7; }
+
+    /* ===== SAVE MODAL ===== */
+    .save-modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 3000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .save-modal-overlay.open { opacity: 1; pointer-events: all; }
+    .save-modal {
+      background: white; border-radius: 0.75rem;
+      width: 400px; max-width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      overflow: hidden;
+      transform: translateY(10px) scale(0.98);
+      transition: transform 0.2s ease;
+    }
+    .save-modal-overlay.open .save-modal { transform: translateY(0) scale(1); }
+    .save-modal-hdr {
+      background: #0f172a; color: white;
+      padding: 1rem 1.25rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .save-modal-hdr h3 { font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.09em; }
+    .save-modal-body { padding: 1.25rem; }
+    .save-modal-hint { font-size: 0.72rem; color: #94a3b8; margin-top: 0.4rem; }
+    .save-modal-ftr { padding: 0 1.25rem 1.25rem; display: flex; gap: 0.5rem; justify-content: flex-end; }
+    .sm-btn {
+      padding: 0.5rem 1.1rem; border-radius: 0.5rem;
+      font-size: 0.8rem; font-weight: 700; cursor: pointer;
+      border: none; font-family: inherit; transition: all 0.15s;
+    }
+    .sm-btn-cancel { background: #f1f5f9; color: #475569; }
+    .sm-btn-cancel:hover { background: #e2e8f0; }
+    .sm-btn-save { background: #ea580c; color: white; }
+    .sm-btn-save:hover { background: #c2410c; }
+
+    /* ===== TOAST ===== */
+    #est-toast {
+      position: fixed; bottom: 5rem; left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a; color: white;
+      padding: 0.55rem 1.2rem;
+      border-radius: 9999px;
+      font-size: 0.78rem; font-weight: 600;
+      z-index: 9999; pointer-events: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      opacity: 0; transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
     /* ================================================================
        PRINT STYLES — dedicated clean single-page estimate document
     ================================================================ */
@@ -480,12 +619,20 @@
     <!-- Action Bar -->
     <div class="flex flex-wrap items-center justify-between gap-3 mb-7 no-print">
       <div class="flex items-center gap-3">
+        <button class="action-btn" style="background:#0f172a;color:white;" onclick="openLibraryPanel()">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          My Estimates
+        </button>
         <span class="inline-flex items-center gap-2 text-xs font-semibold text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full" id="save-indicator">
           <span class="save-dot"></span>
           Auto-saved
         </span>
       </div>
       <div class="flex items-center gap-2">
+        <button class="action-btn" style="background:#16a34a;color:white;" onclick="openSaveModal()">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          Save
+        </button>
         <button class="action-btn" style="background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;" onclick="resetForm()">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           Reset
@@ -800,6 +947,14 @@
           </div>
 
           <div class="mt-3 space-y-2 no-print">
+            <button onclick="openSaveModal()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-colors text-sm">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+              Save Estimate
+            </button>
+            <button onclick="exportCurrentAsJSON()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg font-bold hover:bg-slate-200 transition-colors text-sm">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Export JSON
+            </button>
             <button onclick="sendEmail()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors text-sm">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
               Email Estimate
@@ -818,6 +973,47 @@
 
     </div><!-- /two-col flex -->
   </main>
+
+  <!-- ===== ESTIMATES LIBRARY DRAWER ===== -->
+  <div class="lib-overlay no-print" id="lib-overlay" onclick="closeLibraryPanel()"></div>
+  <div class="lib-drawer no-print" id="lib-drawer" role="dialog" aria-label="My Estimates">
+    <div class="lib-drawer-header">
+      <span class="lib-drawer-title">My Estimates</span>
+      <button class="lib-close-btn" onclick="closeLibraryPanel()" aria-label="Close">&times;</button>
+    </div>
+    <div class="lib-toolbar">
+      <button class="lib-btn lib-btn-import" onclick="document.getElementById('import-json-input').click()">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        Import JSON
+      </button>
+    </div>
+    <div class="lib-body" id="lib-body"></div>
+  </div>
+
+  <!-- ===== SAVE MODAL ===== -->
+  <div class="save-modal-overlay no-print" id="save-modal-overlay">
+    <div class="save-modal" role="dialog" aria-modal="true" aria-labelledby="save-modal-title">
+      <div class="save-modal-hdr">
+        <h3 id="save-modal-title">Save Estimate</h3>
+        <button class="lib-close-btn" onclick="closeSaveModal()" aria-label="Close">&times;</button>
+      </div>
+      <div class="save-modal-body">
+        <label style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#64748b;display:block;margin-bottom:0.35rem;">Estimate Name</label>
+        <input type="text" id="save-modal-name" class="est-input" placeholder="e.g. Smith Deck Rebuild — May 2026" style="font-size:0.875rem;">
+        <p class="save-modal-hint">Give this estimate a memorable name so you can find it later. Customer name + project type works well.</p>
+      </div>
+      <div class="save-modal-ftr">
+        <button class="sm-btn sm-btn-cancel" onclick="closeSaveModal()">Cancel</button>
+        <button class="sm-btn sm-btn-save" onclick="confirmSave()">Save Estimate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden file input for JSON import -->
+  <input type="file" id="import-json-input" accept=".json" style="display:none" onchange="importFromJSON(this)">
+
+  <!-- Toast notification -->
+  <div id="est-toast"></div>
 
   <!-- Print render area (populated by JS before printing) -->
   <div id="print-view"></div>
@@ -1395,29 +1591,8 @@
     }
 
     function persistData() {
-      const data = {
-        info: {
-          customerName:  document.getElementById('customer-name').value,
-          customerEmail: document.getElementById('customer-email').value,
-          estNumber:     document.getElementById('est-number').value,
-          address:       document.getElementById('project-address').value,
-          type:          document.getElementById('project-type').value,
-          date:          document.getElementById('est-date').value,
-          description:   document.getElementById('project-description').value,
-          notes:         document.getElementById('est-notes').value,
-        },
-        adjustments: {
-          overhead:    document.getElementById('overhead-pct').value,
-          contingency: document.getElementById('contingency-pct').value,
-          profit:      document.getElementById('profit-pct').value,
-        },
-        labor:     serializeSection('labor-body', 'labor'),
-        materials: serializeSection('materials-body', 'materials'),
-        equipment: serializeSection('equipment-body', 'equipment'),
-        subs:      serializeSection('sub-body', 'subs'),
-      };
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(collectFormData()));
         flashSaved();
       } catch(e) {}
     }
@@ -1879,11 +2054,328 @@
     });
 
     /* =========================================================
+       ESTIMATES LIBRARY  (Option A + B)
+    ========================================================= */
+    const LIBRARY_KEY = 'sandoval_estimates_lib_v1';
+    let currentLibraryId = null;
+
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    }
+
+    function loadLibrary() {
+      try { return JSON.parse(localStorage.getItem(LIBRARY_KEY)) || []; }
+      catch(e) { return []; }
+    }
+
+    function saveLibrary(lib) {
+      try { localStorage.setItem(LIBRARY_KEY, JSON.stringify(lib)); }
+      catch(e) { showToast('Storage full — could not save.'); }
+    }
+
+    // ── Collect all form data into a serialisable object ──
+    function collectFormData() {
+      return {
+        info: {
+          customerName:  document.getElementById('customer-name').value,
+          customerEmail: document.getElementById('customer-email').value,
+          estNumber:     document.getElementById('est-number').value,
+          address:       document.getElementById('project-address').value,
+          type:          document.getElementById('project-type').value,
+          date:          document.getElementById('est-date').value,
+          description:   document.getElementById('project-description').value,
+          notes:         document.getElementById('est-notes').value,
+        },
+        adjustments: {
+          overhead:    document.getElementById('overhead-pct').value,
+          contingency: document.getElementById('contingency-pct').value,
+          profit:      document.getElementById('profit-pct').value,
+        },
+        labor:     serializeSection('labor-body', 'labor'),
+        materials: serializeSection('materials-body', 'materials'),
+        equipment: serializeSection('equipment-body', 'equipment'),
+        subs:      serializeSection('sub-body', 'subs'),
+      };
+    }
+
+    // ── Restore a form data object into all fields ──
+    function populateFormFromData(data) {
+      if (data.info) {
+        document.getElementById('customer-name').value        = data.info.customerName || '';
+        document.getElementById('customer-email').value       = data.info.customerEmail || '';
+        document.getElementById('est-number').value           = data.info.estNumber || '';
+        document.getElementById('project-address').value      = data.info.address || '';
+        document.getElementById('project-type').value         = data.info.type || '';
+        document.getElementById('est-date').value             = data.info.date || '';
+        document.getElementById('project-description').value  = data.info.description || '';
+        document.getElementById('est-notes').value            = data.info.notes || '';
+      }
+      if (data.adjustments) {
+        document.getElementById('overhead-pct').value    = data.adjustments.overhead ?? 15;
+        document.getElementById('contingency-pct').value = data.adjustments.contingency ?? 7;
+        document.getElementById('profit-pct').value      = data.adjustments.profit ?? 20;
+      }
+      ['labor-body','materials-body','equipment-body','sub-body'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+      });
+      (data.labor || []).forEach(r => addLaborRow({ role: r.role, isCustomRole: r.isCustom, hours: r.hours, rate: r.rate, crew: r.crew }));
+      (data.materials || []).forEach(r => addMaterialRow({ item: r.item, isCustomItem: r.isCustom, qty: r.qty, unitCost: r.unitCost, waste: r.waste }));
+      (data.equipment || []).forEach(r => addEquipmentRow({ name: r.name, isCustomName: r.isCustom, days: r.days, dailyRate: r.dailyRate }));
+      (data.subs || []).forEach(r => addSubRow({ trade: r.trade, isCustomTrade: r.isCustom, cost: r.cost }));
+      syncSummaryHeader();
+      calculate();
+    }
+
+    // ── Save Modal ──
+    function openSaveModal() {
+      // Pre-fill name from customer + project type if available
+      const name    = document.getElementById('customer-name').value.trim();
+      const type    = document.getElementById('project-type').value;
+      const estNum  = document.getElementById('est-number').value.trim();
+      let suggestion = '';
+      if (name) suggestion += name;
+      if (type) suggestion += (suggestion ? ' — ' : '') + type;
+      if (estNum) suggestion += (suggestion ? ' (' + estNum + ')' : estNum);
+      const nameInput = document.getElementById('save-modal-name');
+      // If currently loaded from library, use existing name
+      if (currentLibraryId) {
+        const lib = loadLibrary();
+        const existing = lib.find(e => e.id === currentLibraryId);
+        nameInput.value = existing ? existing.name : suggestion;
+      } else {
+        nameInput.value = suggestion;
+      }
+      document.getElementById('save-modal-overlay').classList.add('open');
+      setTimeout(() => nameInput.focus(), 50);
+    }
+
+    function closeSaveModal() {
+      document.getElementById('save-modal-overlay').classList.remove('open');
+    }
+
+    function confirmSave() {
+      const nameInput = document.getElementById('save-modal-name');
+      const name = nameInput.value.trim();
+      if (!name) { nameInput.focus(); return; }
+
+      const lib = loadLibrary();
+      const formData = collectFormData();
+      const total = parseFloat(document.getElementById('sum-total').textContent.replace(/[$,]/g,'')) || 0;
+      const customer = formData.info.customerName || '';
+
+      if (currentLibraryId) {
+        // Update existing
+        const idx = lib.findIndex(e => e.id === currentLibraryId);
+        if (idx !== -1) {
+          lib[idx] = { ...lib[idx], name, customer, total, savedAt: new Date().toISOString(), data: formData };
+          saveLibrary(lib);
+          showToast('Estimate updated — "' + name + '"');
+        }
+      } else {
+        // New save
+        const entry = { id: generateId(), name, customer, total, savedAt: new Date().toISOString(), data: formData };
+        lib.unshift(entry);
+        saveLibrary(lib);
+        currentLibraryId = entry.id;
+        showToast('Estimate saved — "' + name + '"');
+      }
+
+      closeSaveModal();
+      // Also persist to the working slot
+      persistData();
+    }
+
+    // ── Library Panel ──
+    function openLibraryPanel() {
+      renderLibraryList();
+      document.getElementById('lib-overlay').classList.add('open');
+      document.getElementById('lib-drawer').classList.add('open');
+    }
+
+    function closeLibraryPanel() {
+      document.getElementById('lib-overlay').classList.remove('open');
+      document.getElementById('lib-drawer').classList.remove('open');
+    }
+
+    function escHtml(str) {
+      return String(str || '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderLibraryList() {
+      const lib = loadLibrary();
+      const body = document.getElementById('lib-body');
+      if (!lib.length) {
+        body.innerHTML = '<div class="lib-empty">'
+          + '<svg class="lib-empty-icon" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>'
+          + '<p>No saved estimates yet.</p>'
+          + '<p style="margin-top:0.4rem;font-size:0.78rem;">Click <strong>Save</strong> to store the current estimate.</p>'
+          + '</div>';
+        return;
+      }
+
+      let html = '';
+      lib.forEach(entry => {
+        const isActive = entry.id === currentLibraryId;
+        const savedDate = new Date(entry.savedAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        const totalStr = '$' + (entry.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        html += '<div class="lib-card' + (isActive ? ' lib-card-active' : '') + '">';
+        if (isActive) html += '<div class="lib-card-badge">Currently Loaded</div>';
+        html += '<div class="lib-card-name">' + escHtml(entry.name) + '</div>';
+        if (entry.customer) html += '<div class="lib-card-customer">' + escHtml(entry.customer) + '</div>';
+        html += '<div class="lib-card-total">' + totalStr + '</div>';
+        html += '<div class="lib-card-meta">Saved ' + savedDate + '</div>';
+        html += '<div class="lib-card-actions">'
+          + '<button class="lib-btn lib-btn-load" onclick="loadEstimateFromLibrary(\'' + entry.id + '\')">Load</button>'
+          + '<button class="lib-btn lib-btn-export" onclick="exportEstimateAsJSON(\'' + entry.id + '\')">Export JSON</button>'
+          + '<button class="lib-btn lib-btn-delete" onclick="deleteEstimate(\'' + entry.id + '\')">Delete</button>'
+          + '</div>';
+        html += '</div>';
+      });
+      body.innerHTML = html;
+    }
+
+    function loadEstimateFromLibrary(id) {
+      const lib = loadLibrary();
+      const entry = lib.find(e => e.id === id);
+      if (!entry) return;
+      if (!confirm('Load "' + entry.name + '"? Any unsaved changes to the current estimate will be lost.')) return;
+      currentLibraryId = id;
+      populateFormFromData(entry.data);
+      persistData();
+      closeLibraryPanel();
+      showToast('Loaded — "' + entry.name + '"');
+    }
+
+    function deleteEstimate(id) {
+      const lib = loadLibrary();
+      const entry = lib.find(e => e.id === id);
+      if (!entry) return;
+      if (!confirm('Delete "' + entry.name + '"? This cannot be undone.')) return;
+      const updated = lib.filter(e => e.id !== id);
+      saveLibrary(updated);
+      if (currentLibraryId === id) currentLibraryId = null;
+      renderLibraryList();
+      showToast('Estimate deleted.');
+    }
+
+    // ── JSON Export / Import ──
+    function exportCurrentAsJSON() {
+      const formData = collectFormData();
+      const name = document.getElementById('customer-name').value.trim() || 'estimate';
+      const estNum = document.getElementById('est-number').value.trim();
+      const payload = {
+        _source: 'Sandoval Home Improvement Estimate Builder',
+        _version: 1,
+        name: (name + (estNum ? ' ' + estNum : '')).trim(),
+        exportedAt: new Date().toISOString(),
+        data: formData,
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = (name + (estNum ? '-' + estNum : '') + '.json').replace(/\s+/g, '-').toLowerCase();
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('JSON file downloaded.');
+    }
+
+    function exportEstimateAsJSON(id) {
+      const lib = loadLibrary();
+      const entry = lib.find(e => e.id === id);
+      if (!entry) return;
+      const payload = {
+        _source: 'Sandoval Home Improvement Estimate Builder',
+        _version: 1,
+        name: entry.name,
+        exportedAt: new Date().toISOString(),
+        data: entry.data,
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = entry.name.replace(/\s+/g, '-').toLowerCase() + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('JSON exported.');
+    }
+
+    function importFromJSON(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const payload = JSON.parse(e.target.result);
+          const formData = payload.data || payload; // support both wrapped and raw
+          if (!formData.info && !formData.labor) throw new Error('Unrecognised format');
+
+          // Ask name
+          const suggestedName = payload.name || file.name.replace(/\.json$/i,'').replace(/-/g,' ');
+          const name = prompt('Save imported estimate as:', suggestedName);
+          if (name === null) return; // user cancelled
+
+          const lib = loadLibrary();
+          const total = 0; // will be computed after load
+          const entry = { id: generateId(), name: name.trim() || suggestedName, customer: formData.info?.customerName || '', total, savedAt: new Date().toISOString(), data: formData };
+          lib.unshift(entry);
+          saveLibrary(lib);
+
+          // Load it immediately
+          currentLibraryId = entry.id;
+          populateFormFromData(formData);
+          // Update stored total after calculate() runs
+          const computedTotal = parseFloat(document.getElementById('sum-total').textContent.replace(/[$,]/g,'')) || 0;
+          entry.total = computedTotal;
+          lib[0] = entry;
+          saveLibrary(lib);
+
+          persistData();
+          showToast('Imported — "' + entry.name + '"');
+        } catch(err) {
+          alert('Could not import: ' + err.message + '\nMake sure this is a valid Sandoval estimate JSON file.');
+        }
+        input.value = ''; // reset so same file can be re-imported
+      };
+      reader.readAsText(file);
+    }
+
+    // ── Toast ──
+    function showToast(message) {
+      const toast = document.getElementById('est-toast');
+      toast.textContent = message;
+      toast.style.opacity = '1';
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 2800);
+    }
+
+    // Close save modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeSaveModal();
+        closeLibraryPanel();
+      }
+    });
+
+    // Allow Enter key to confirm save modal
+    document.getElementById('save-modal-name').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') confirmSave();
+    });
+
+    /* =========================================================
        RESET
     ========================================================= */
     function resetForm() {
       if (!confirm('Reset the entire estimate? This cannot be undone.')) return;
       localStorage.removeItem(STORAGE_KEY);
+      currentLibraryId = null;
       // Clear info
       ['customer-name','customer-email','est-number','project-address','project-description','est-notes'].forEach(id => {
         document.getElementById(id).value = '';
