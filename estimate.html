@@ -264,6 +264,13 @@
       50% { opacity: 0.4; }
     }
 
+    /* Print-only header (hidden on screen) */
+    .print-header { display: none; }
+    /* Waste column always visible on screen */
+    .waste-col { }
+    /* PM&O grouped row hidden on screen, shown in print */
+    .print-pm-row { display: none !important; }
+
     /* Print styles */
     @media print {
       .no-print { display: none !important; }
@@ -277,6 +284,15 @@
       .section-total { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .est-card-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .lg\:flex-row { flex-direction: column !important; }
+      /* Show print-only header */
+      .print-header { display: block !important; }
+      /* Hide waste column in materials table */
+      .waste-col { display: none !important; }
+      /* Group overhead/contingency/profit — hide individuals, show combined */
+      .sum-adj-individual { display: none !important; }
+      .print-pm-row { display: flex !important; }
+      /* Hide the adjustments form card (percentages not needed on printout) */
+      .adj-section { display: none !important; }
     }
   </style>
 </head>
@@ -338,6 +354,22 @@
   <!-- ===== MAIN ===== -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
 
+    <!-- Print-only document header -->
+    <div class="print-header" style="border-bottom:3px solid #0f172a; padding-bottom:1.25rem; margin-bottom:1.5rem;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+        <div>
+          <p style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:#ea580c; margin-bottom:0.2rem;">Sandoval Home Improvement</p>
+          <h1 id="print-title" style="font-size:1.4rem; font-weight:900; color:#0f172a; text-transform:uppercase; letter-spacing:0.04em; margin:0;">Project Estimate</h1>
+          <p id="print-address" style="font-size:0.78rem; color:#475569; margin-top:0.3rem;"></p>
+        </div>
+        <div style="text-align:right; font-size:0.78rem; color:#475569; line-height:1.7;">
+          <div><span style="font-weight:700; color:#0f172a;">Estimate #:</span> <span id="print-est-num">—</span></div>
+          <div><span style="font-weight:700; color:#0f172a;">Date:</span> <span id="print-date">—</span></div>
+          <div style="margin-top:0.4rem; color:#64748b;">703-937-7579 | sandovalhomeimprovement@yahoo.com</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Action Bar -->
     <div class="flex flex-wrap items-center justify-between gap-3 mb-7 no-print">
       <div class="flex items-center gap-3">
@@ -381,11 +413,11 @@
               </div>
               <div class="form-group">
                 <label for="est-number">Estimate #</label>
-                <input type="text" id="est-number" class="est-input" placeholder="EST-001" oninput="autoSave()">
+                <input type="text" id="est-number" class="est-input" placeholder="EST-001" oninput="syncSummaryHeader(); autoSave()">
               </div>
               <div class="form-group" style="grid-column:1/-1">
                 <label for="project-address">Project Address</label>
-                <input type="text" id="project-address" class="est-input" placeholder="123 Main St, Woodbridge, VA 22191" oninput="autoSave()">
+                <input type="text" id="project-address" class="est-input" placeholder="123 Main St, Woodbridge, VA 22191" oninput="syncSummaryHeader(); autoSave()">
               </div>
               <div class="form-group">
                 <label for="project-type">Project Type</label>
@@ -470,7 +502,7 @@
                     <th style="min-width:165px">Item / Material</th>
                     <th style="min-width:70px">Qty</th>
                     <th style="min-width:90px">Unit Cost</th>
-                    <th style="min-width:75px">Waste %</th>
+                    <th class="waste-col" style="min-width:75px">Waste %</th>
                     <th style="min-width:105px">Line Total</th>
                     <th style="width:34px"></th>
                   </tr>
@@ -548,7 +580,7 @@
         </div>
 
         <!-- 6. ADJUSTMENTS -->
-        <div class="est-card">
+        <div class="est-card adj-section">
           <div class="est-card-header">
             <h3>6 &mdash; Adjustments</h3>
           </div>
@@ -636,17 +668,22 @@
               <span class="summary-value" id="sum-subtotal">$0.00</span>
             </div>
 
-            <div class="summary-row">
+            <div class="summary-row sum-adj-individual">
               <span class="summary-label">Overhead <span class="text-xs opacity-60">(<span id="sum-ovh-pct">15</span>%)</span></span>
               <span class="summary-value" id="sum-overhead">$0.00</span>
             </div>
-            <div class="summary-row">
+            <div class="summary-row sum-adj-individual">
               <span class="summary-label">Contingency <span class="text-xs opacity-60">(<span id="sum-con-pct">7</span>%)</span></span>
               <span class="summary-value" id="sum-contingency">$0.00</span>
             </div>
-            <div class="summary-row">
+            <div class="summary-row sum-adj-individual">
               <span class="summary-label">Profit <span class="text-xs opacity-60">(<span id="sum-pro-pct">20</span>%)</span></span>
               <span class="summary-value" id="sum-profit">$0.00</span>
+            </div>
+            <!-- Print-only grouped row -->
+            <div class="summary-row print-pm-row">
+              <span class="summary-label" style="font-size:0.75rem;">Project Mgmt &amp; Operational Costs</span>
+              <span class="summary-value" id="sum-pmo">$0.00</span>
             </div>
 
             <div class="final-row">
@@ -983,6 +1020,7 @@
 
       // Waste %
       const wasteTd = document.createElement('td');
+      wasteTd.className = 'waste-col';
       const wasteInp = document.createElement('input');
       wasteInp.type = 'number'; wasteInp.className = 'est-input';
       wasteInp.min = '0'; wasteInp.max = '100'; wasteInp.step = '1'; wasteInp.placeholder = '10';
@@ -1206,18 +1244,32 @@
       document.getElementById('sum-overhead').textContent    = fmt(overhead);
       document.getElementById('sum-contingency').textContent = fmt(contingency);
       document.getElementById('sum-profit').textContent      = fmt(profit);
+      document.getElementById('sum-pmo').textContent         = fmt(overhead + contingency + profit);
       document.getElementById('sum-total').textContent       = fmt(finalTotal);
     }
 
     function syncSummaryHeader() {
-      const name = document.getElementById('customer-name').value.trim();
-      const date = document.getElementById('est-date').value;
+      const name    = document.getElementById('customer-name').value.trim();
+      const date    = document.getElementById('est-date').value;
+      const address = document.getElementById('project-address').value.trim();
+      const estNum  = document.getElementById('est-number').value.trim();
+
+      // Sidebar summary
       document.getElementById('sum-customer').textContent = name || '—';
+
+      // Print header
+      document.getElementById('print-title').textContent = (name ? name + ' \u2014 ' : '') + 'Project Estimate';
+      document.getElementById('print-address').textContent = address;
+      document.getElementById('print-est-num').textContent = estNum || '—';
+
       if (date) {
         const d = new Date(date + 'T00:00:00');
-        document.getElementById('sum-date').textContent = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        const formatted = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        document.getElementById('sum-date').textContent   = formatted;
+        document.getElementById('print-date').textContent = formatted;
       } else {
-        document.getElementById('sum-date').textContent = '';
+        document.getElementById('sum-date').textContent   = '';
+        document.getElementById('print-date').textContent = '—';
       }
     }
 
@@ -1362,7 +1414,7 @@
       const div2 = '═'.repeat(52);
       let body = '';
 
-      body += 'PROJECT ESTIMATE\n';
+      body += (customer !== '(No name)' ? customer + ' \u2014 ' : '') + 'Project Estimate\n';
       body += 'Sandoval Home Improvement\n';
       body += '703-937-7579  |  sandovalhomeimprovement@yahoo.com\n';
       body += div2 + '\n\n';
@@ -1414,7 +1466,7 @@
         body += '\n' + div + '\nMATERIALS\n' + div + '\n';
         matRows.forEach(row => {
           const label  = (row.name + ' ').padEnd(22, ' ');
-          const detail = (row.q + ' qty @ $' + row.uc.toFixed(2) + (row.w ? ' +' + row.w + '% waste' : '')).padEnd(28, ' ');
+          const detail = (row.q + ' qty @ $' + row.uc.toFixed(2)).padEnd(28, ' ');
           body += label + detail + fmt(row.t) + '\n';
         });
         body += 'Materials Total:'.padStart(50) + '  ' + document.getElementById('sum-materials').textContent + '\n';
@@ -1461,22 +1513,16 @@
       }
 
       // ── SUMMARY ──
-      const ovhPct = document.getElementById('overhead-pct').value;
-      const conPct = document.getElementById('contingency-pct').value;
-      const proPct = document.getElementById('profit-pct').value;
-
       body += '\n' + div2 + '\nESTIMATE SUMMARY\n' + div2 + '\n';
-      body += 'Labor:                       ' + document.getElementById('sum-labor').textContent + '\n';
-      body += 'Materials:                   ' + document.getElementById('sum-materials').textContent + '\n';
-      body += 'Equipment:                   ' + document.getElementById('sum-equipment').textContent + '\n';
-      body += 'Subcontractors:              ' + document.getElementById('sum-sub').textContent + '\n';
+      body += 'Labor:                              ' + document.getElementById('sum-labor').textContent + '\n';
+      body += 'Materials:                          ' + document.getElementById('sum-materials').textContent + '\n';
+      body += 'Equipment:                          ' + document.getElementById('sum-equipment').textContent + '\n';
+      body += 'Subcontractors:                     ' + document.getElementById('sum-sub').textContent + '\n';
       body += div + '\n';
-      body += 'Subtotal:                    ' + document.getElementById('sum-subtotal').textContent + '\n';
-      body += 'Overhead (' + ovhPct + '%):              ' + document.getElementById('sum-overhead').textContent + '\n';
-      body += 'Contingency (' + conPct + '%):           ' + document.getElementById('sum-contingency').textContent + '\n';
-      body += 'Profit (' + proPct + '%):                ' + document.getElementById('sum-profit').textContent + '\n';
+      body += 'Subtotal:                           ' + document.getElementById('sum-subtotal').textContent + '\n';
+      body += 'Project Mgmt & Operational Costs:   ' + document.getElementById('sum-pmo').textContent + '\n';
       body += div2 + '\n';
-      body += 'TOTAL ESTIMATE:              ' + document.getElementById('sum-total').textContent + '\n';
+      body += 'TOTAL ESTIMATE:                     ' + document.getElementById('sum-total').textContent + '\n';
       body += div2 + '\n';
 
       if (notes) {
