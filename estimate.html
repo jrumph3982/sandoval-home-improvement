@@ -348,8 +348,8 @@
     }
     .lib-btn-load  { background: #0f172a; color: white; }
     .lib-btn-load:hover  { background: #1e293b; }
-    .lib-btn-export { background: #f1f5f9; color: #475569; }
-    .lib-btn-export:hover { background: #e2e8f0; }
+    .lib-btn-export { background: #475569; color: #fff; }
+    .lib-btn-export:hover { background: #334155; }
     .lib-btn-delete { background: #fee2e2; color: #dc2626; }
     .lib-btn-delete:hover { background: #fca5a5; }
     .lib-btn-import { background: #f0fdf4; color: #16a34a; border: 1.5px solid #bbf7d0; }
@@ -539,6 +539,16 @@
         font-size: 6.5pt; color: #94a3b8;
         border-top: 0.5pt solid #e2e8f0; padding-top: 5pt;
       }
+
+      /* ── Measurements totals strip ── */
+      .pv-meas-totals {
+        display: flex; flex-wrap: wrap; gap: 3pt 14pt;
+        padding: 4pt 8pt;
+        background: #f8fafc; border-top: 0.5pt solid #e2e8f0;
+        font-size: 7.5pt; color: #374151;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+      .pv-meas-total-val { font-weight: 800; color: #0f172a; }
     }
   </style>
 </head>
@@ -633,7 +643,7 @@
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
           Save
         </button>
-        <button class="action-btn" style="background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;" onclick="resetForm()">
+        <button class="action-btn" style="background:#dc2626;color:#fff;border:1.5px solid #b91c1c;" onclick="resetForm()">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           Reset
         </button>
@@ -710,10 +720,42 @@
           </div>
         </div>
 
-        <!-- 2. LABOR -->
+        <!-- 2. PROJECT MEASUREMENTS -->
         <div class="est-card">
           <div class="est-card-header">
-            <h3>2 &mdash; Labor</h3>
+            <h3>2 &mdash; Project Measurements</h3>
+          </div>
+          <div class="est-card-body">
+            <div class="est-table-wrap">
+              <table class="est-table" id="meas-table">
+                <thead>
+                  <tr>
+                    <th style="min-width:150px">Area / Description</th>
+                    <th style="min-width:68px">L (ft)</th>
+                    <th style="min-width:68px">W (ft)</th>
+                    <th style="min-width:68px">H (ft)</th>
+                    <th style="min-width:155px">Type</th>
+                    <th style="min-width:110px">Result</th>
+                    <th style="width:34px"></th>
+                  </tr>
+                </thead>
+                <tbody id="meas-body"></tbody>
+              </table>
+            </div>
+            <div class="mt-4 flex items-start justify-between flex-wrap gap-3">
+              <button class="add-row-btn no-print" onclick="addMeasurementRow()">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Add Area / Room
+              </button>
+              <div id="meas-totals" class="flex flex-wrap gap-2 pt-0.5"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. LABOR -->
+        <div class="est-card">
+          <div class="est-card-header">
+            <h3>3 &mdash; Labor</h3>
             <span class="section-total" id="labor-badge">$0.00</span>
           </div>
           <div class="est-card-body">
@@ -742,10 +784,10 @@
           </div>
         </div>
 
-        <!-- 3. MATERIALS -->
+        <!-- 4. MATERIALS -->
         <div class="est-card">
           <div class="est-card-header">
-            <h3>3 &mdash; Materials</h3>
+            <h3>4 &mdash; Materials</h3>
             <span class="section-total" id="materials-badge">$0.00</span>
           </div>
           <div class="est-card-body">
@@ -774,10 +816,10 @@
           </div>
         </div>
 
-        <!-- 4. EQUIPMENT -->
+        <!-- 5. EQUIPMENT -->
         <div class="est-card">
           <div class="est-card-header">
-            <h3>4 &mdash; Equipment &amp; Rentals</h3>
+            <h3>5 &mdash; Equipment &amp; Rentals</h3>
             <span class="section-total" id="equipment-badge">$0.00</span>
           </div>
           <div class="est-card-body">
@@ -805,10 +847,10 @@
           </div>
         </div>
 
-        <!-- 5. SUBCONTRACTORS -->
+        <!-- 6. SUBCONTRACTORS -->
         <div class="est-card">
           <div class="est-card-header">
-            <h3>5 &mdash; Subcontractors</h3>
+            <h3>6 &mdash; Subcontractors</h3>
             <span class="section-total" id="sub-badge">$0.00</span>
           </div>
           <div class="est-card-body">
@@ -833,10 +875,10 @@
           </div>
         </div>
 
-        <!-- 6. ADJUSTMENTS -->
+        <!-- 7. ADJUSTMENTS -->
         <div class="est-card adj-section">
           <div class="est-card-header">
-            <h3>6 &mdash; Adjustments</h3>
+            <h3>7 &mdash; Adjustments</h3>
           </div>
           <div class="est-card-body">
             <div class="adj-row">
@@ -951,9 +993,9 @@
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
               Save Estimate
             </button>
-            <button onclick="exportCurrentAsJSON()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg font-bold hover:bg-slate-200 transition-colors text-sm">
+            <button onclick="exportCurrentAsJSON()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-600 text-white rounded-lg font-bold hover:bg-slate-700 transition-colors text-sm">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-              Export JSON
+              Export Estimate
             </button>
             <button onclick="sendEmail()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors text-sm">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -963,7 +1005,7 @@
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
               Print Estimate
             </button>
-            <button onclick="resetForm()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-slate-200 text-slate-500 rounded-lg font-bold hover:border-red-300 hover:text-red-500 transition-colors text-sm bg-white">
+            <button onclick="resetForm()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition-colors text-sm">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
               Reset Form
             </button>
@@ -984,7 +1026,7 @@
     <div class="lib-toolbar">
       <button class="lib-btn lib-btn-import" onclick="document.getElementById('import-json-input').click()">
         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-        Import JSON
+        Import Estimates
       </button>
     </div>
     <div class="lib-body" id="lib-body"></div>
@@ -1453,6 +1495,183 @@
     }
 
     /* =========================================================
+       MEASUREMENT ROWS
+    ========================================================= */
+    function addMeasurementRow(d = {}) {
+      const tr = document.createElement('tr');
+      const tbody = document.getElementById('meas-body');
+
+      // Area name
+      const nameTd = document.createElement('td');
+      const nameInp = document.createElement('input');
+      nameInp.type = 'text'; nameInp.className = 'est-input';
+      nameInp.placeholder = 'e.g. Living Room';
+      nameInp.value = d.area || '';
+      nameInp.addEventListener('input', autoSave);
+      nameTd.appendChild(nameInp);
+
+      // L
+      const lTd = document.createElement('td');
+      const lInp = document.createElement('input');
+      lInp.type = 'number'; lInp.className = 'est-input';
+      lInp.min = '0'; lInp.step = '0.25'; lInp.placeholder = '0';
+      lInp.value = d.length || '';
+      lInp.addEventListener('input', function() { updateMeasurementLine(tr); autoSave(); });
+      lTd.appendChild(lInp);
+
+      // W
+      const wTd = document.createElement('td');
+      wTd.dataset.col = 'w';
+      const wInp = document.createElement('input');
+      wInp.type = 'number'; wInp.className = 'est-input';
+      wInp.min = '0'; wInp.step = '0.25'; wInp.placeholder = '0';
+      wInp.value = d.width || '';
+      wInp.addEventListener('input', function() { updateMeasurementLine(tr); autoSave(); });
+      wTd.appendChild(wInp);
+
+      // H
+      const hTd = document.createElement('td');
+      hTd.dataset.col = 'h';
+      const hInp = document.createElement('input');
+      hInp.type = 'number'; hInp.className = 'est-input';
+      hInp.min = '0'; hInp.step = '0.25'; hInp.placeholder = '0';
+      hInp.value = d.height || '';
+      hInp.addEventListener('input', function() { updateMeasurementLine(tr); autoSave(); });
+      hTd.appendChild(hInp);
+
+      // Type
+      const typeTd = document.createElement('td');
+      const typeSel = document.createElement('select');
+      typeSel.className = 'est-select';
+      typeSel.dataset.col = 'type';
+      [
+        ['floor',  'Floor / Ceiling Area'],
+        ['wall',   'Wall Area'],
+        ['linear', 'Linear Feet'],
+        ['volume', 'Volume'],
+      ].forEach(([val, label]) => {
+        const o = document.createElement('option');
+        o.value = val; o.textContent = label;
+        typeSel.appendChild(o);
+      });
+      typeSel.value = d.calcType || 'floor';
+      typeSel.addEventListener('change', function() {
+        updateMeasurementVisibility(tr);
+        updateMeasurementLine(tr);
+        autoSave();
+      });
+      typeTd.appendChild(typeSel);
+
+      // Result
+      const resultTd = document.createElement('td');
+      resultTd.className = 'line-total-cell';
+      resultTd.dataset.col = 'result';
+      resultTd.textContent = '—';
+
+      // Remove
+      const rmTd = document.createElement('td');
+      const rmBtn = document.createElement('button');
+      rmBtn.className = 'remove-btn no-print';
+      rmBtn.title = 'Remove row';
+      rmBtn.innerHTML = '&times;';
+      rmBtn.addEventListener('click', function() {
+        this.closest('tr').remove();
+        calculateMeasurements();
+        autoSave();
+      });
+      rmTd.appendChild(rmBtn);
+
+      tr.appendChild(nameTd);
+      tr.appendChild(lTd);
+      tr.appendChild(wTd);
+      tr.appendChild(hTd);
+      tr.appendChild(typeTd);
+      tr.appendChild(resultTd);
+      tr.appendChild(rmTd);
+      tbody.appendChild(tr);
+
+      updateMeasurementVisibility(tr);
+      if (d.length) updateMeasurementLine(tr);
+    }
+
+    function updateMeasurementVisibility(tr) {
+      const typeSel = tr.querySelector('[data-col="type"]');
+      const wTd = tr.querySelector('[data-col="w"]');
+      const hTd = tr.querySelector('[data-col="h"]');
+      if (!typeSel) return;
+      const type = typeSel.value;
+      wTd.style.visibility = (type === 'linear') ? 'hidden' : '';
+      hTd.style.visibility = (type === 'wall' || type === 'volume') ? '' : 'hidden';
+    }
+
+    function updateMeasurementLine(tr) {
+      const typeSel = tr.querySelector('[data-col="type"]');
+      const resultTd = tr.querySelector('[data-col="result"]');
+      const nums = tr.querySelectorAll('input[type=number]');
+      const l = parseFloat(nums[0]?.value) || 0;
+      const w = parseFloat(nums[1]?.value) || 0;
+      const h = parseFloat(nums[2]?.value) || 0;
+      const type = typeSel ? typeSel.value : 'floor';
+
+      let result = 0, unit = '';
+      switch (type) {
+        case 'floor':  result = l * w;          unit = 'sqft';   break;
+        case 'wall':   result = 2 * (l + w) * h; unit = 'sqft';   break;
+        case 'linear': result = l;               unit = 'lin ft'; break;
+        case 'volume': result = l * w * h;       unit = 'cu ft';  break;
+      }
+      resultTd.textContent = result > 0
+        ? result.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + unit
+        : '—';
+      calculateMeasurements();
+    }
+
+    function calculateMeasurements() {
+      const totals = { floor: 0, wall: 0, linear: 0, volume: 0 };
+      document.querySelectorAll('#meas-body tr').forEach(tr => {
+        const typeSel = tr.querySelector('[data-col="type"]');
+        if (!typeSel) return;
+        const nums = tr.querySelectorAll('input[type=number]');
+        const l = parseFloat(nums[0]?.value) || 0;
+        const w = parseFloat(nums[1]?.value) || 0;
+        const h = parseFloat(nums[2]?.value) || 0;
+        switch (typeSel.value) {
+          case 'floor':  totals.floor  += l * w;           break;
+          case 'wall':   totals.wall   += 2 * (l + w) * h; break;
+          case 'linear': totals.linear += l;               break;
+          case 'volume': totals.volume += l * w * h;       break;
+        }
+      });
+      const fmt2 = n => n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+      const pill = (val, label) =>
+        '<span style="background:#f1f5f9;border-radius:9999px;padding:0.18rem 0.65rem;font-size:0.72rem;font-weight:700;color:#374151;">'
+        + '<span style="color:#ea580c;">' + fmt2(val) + '</span> ' + label + '</span>';
+      const parts = [];
+      if (totals.floor  > 0) parts.push(pill(totals.floor,  'sqft floor'));
+      if (totals.wall   > 0) parts.push(pill(totals.wall,   'sqft wall'));
+      if (totals.linear > 0) parts.push(pill(totals.linear, 'lin ft'));
+      if (totals.volume > 0) parts.push(pill(totals.volume, 'cu ft'));
+      document.getElementById('meas-totals').innerHTML = parts.join('');
+    }
+
+    function serializeMeasurements() {
+      const rows = [];
+      document.querySelectorAll('#meas-body tr').forEach(tr => {
+        const nameInp = tr.querySelector('input[type=text]');
+        const nums    = tr.querySelectorAll('input[type=number]');
+        const typeSel = tr.querySelector('[data-col="type"]');
+        rows.push({
+          area:     nameInp ? nameInp.value : '',
+          length:   nums[0]?.value || '',
+          width:    nums[1]?.value || '',
+          height:   nums[2]?.value || '',
+          calcType: typeSel ? typeSel.value : 'floor',
+        });
+      });
+      return rows;
+    }
+
+    /* =========================================================
        MAIN CALCULATION ENGINE
     ========================================================= */
     function sectionTotal(bodyId, ltClass) {
@@ -1665,6 +1884,7 @@
         (data.subs || []).forEach(r => addSubRow({
           trade: r.trade, isCustomTrade: r.isCustom, cost: r.cost
         }));
+        (data.measurements || []).forEach(r => addMeasurementRow(r));
 
         syncSummaryHeader();
         calculate();
@@ -1713,6 +1933,46 @@
       body += 'Project Type:  ' + projType + '\n';
       body += div2 + '\n';
       if (desc) { body += '\nScope of Work:\n' + desc + '\n'; }
+
+      // ── MEASUREMENTS ──
+      const measEmailRows = [];
+      document.querySelectorAll('#meas-body tr').forEach(tr => {
+        const nameInp = tr.querySelector('input[type=text]');
+        const nums    = tr.querySelectorAll('input[type=number]');
+        const typeSel = tr.querySelector('[data-col="type"]');
+        if (!typeSel) return;
+        const area = nameInp ? nameInp.value.trim() : '';
+        const l = parseFloat(nums[0]?.value) || 0;
+        const w = parseFloat(nums[1]?.value) || 0;
+        const hv = parseFloat(nums[2]?.value) || 0;
+        const type = typeSel.value;
+        let result = 0, unit = '', dimStr = '';
+        switch (type) {
+          case 'floor':  result = l * w;           unit = 'sqft';   dimStr = l + ' x ' + w + ' ft'; break;
+          case 'wall':   result = 2 * (l + w) * hv; unit = 'sqft';   dimStr = '2(' + l + '+' + w + ') x ' + hv + ' ft'; break;
+          case 'linear': result = l;               unit = 'lin ft'; dimStr = l + ' ft'; break;
+          case 'volume': result = l * w * hv;      unit = 'cu ft';  dimStr = l + ' x ' + w + ' x ' + hv + ' ft'; break;
+        }
+        if (!area && !result) return;
+        measEmailRows.push({ area: area || '—', dimStr, result, unit, type });
+      });
+      if (measEmailRows.length) {
+        body += '\n' + div + '\nPROJECT MEASUREMENTS\n' + div + '\n';
+        const mTotals = { floor: 0, wall: 0, linear: 0, volume: 0 };
+        const fmt2 = n => n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+        measEmailRows.forEach(row => {
+          const label  = (row.area + ' ').padEnd(22, ' ');
+          const detail = (row.dimStr + ' ').padEnd(28, ' ');
+          const res    = row.result > 0 ? fmt2(row.result) + ' ' + row.unit : '—';
+          body += label + detail + res + '\n';
+          mTotals[row.type] += row.result;
+        });
+        body += div.slice(0, 20) + '\n';
+        if (mTotals.floor  > 0) body += 'Total Floor Area:'.padEnd(30) + fmt2(mTotals.floor)  + ' sqft\n';
+        if (mTotals.wall   > 0) body += 'Total Wall Area:'.padEnd(30)  + fmt2(mTotals.wall)   + ' sqft\n';
+        if (mTotals.linear > 0) body += 'Total Linear Feet:'.padEnd(30)+ fmt2(mTotals.linear) + ' lin ft\n';
+        if (mTotals.volume > 0) body += 'Total Volume:'.padEnd(30)     + fmt2(mTotals.volume) + ' cu ft\n';
+      }
 
       // ── LABOR ──
       const laborRows = [];
@@ -1963,6 +2223,55 @@
         h += '</div>';
       }
 
+      // MEASUREMENTS
+      const measPrintData = [];
+      document.querySelectorAll('#meas-body tr').forEach(tr => {
+        const nameInp = tr.querySelector('input[type=text]');
+        const nums    = tr.querySelectorAll('input[type=number]');
+        const typeSel = tr.querySelector('[data-col="type"]');
+        if (!typeSel) return;
+        const area = nameInp ? nameInp.value.trim() : '';
+        const l = parseFloat(nums[0]?.value) || 0;
+        const w = parseFloat(nums[1]?.value) || 0;
+        const hv = parseFloat(nums[2]?.value) || 0;
+        const type = typeSel.value;
+        let result = 0, unit = '', dimStr = '';
+        switch (type) {
+          case 'floor':  result = l * w;           unit = 'sqft';   dimStr = l + ' &times; ' + w + ' ft'; break;
+          case 'wall':   result = 2 * (l + w) * hv; unit = 'sqft';   dimStr = '2(' + l + '+' + w + ') &times; ' + hv + ' ft'; break;
+          case 'linear': result = l;               unit = 'lin ft'; dimStr = l + ' ft'; break;
+          case 'volume': result = l * w * hv;      unit = 'cu ft';  dimStr = l + ' &times; ' + w + ' &times; ' + hv + ' ft'; break;
+        }
+        if (!area && !result) return;
+        measPrintData.push({ area: area || '—', dimStr, result, unit, type });
+      });
+
+      if (measPrintData.length) {
+        const mTotals = { floor: 0, wall: 0, linear: 0, volume: 0 };
+        measPrintData.forEach(row => { mTotals[row.type] += row.result; });
+        const totalParts = [];
+        const fmt2 = n => n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+        if (mTotals.floor  > 0) totalParts.push('<span><span class="pv-meas-total-val">' + fmt2(mTotals.floor)  + ' sqft</span> floor area</span>');
+        if (mTotals.wall   > 0) totalParts.push('<span><span class="pv-meas-total-val">' + fmt2(mTotals.wall)   + ' sqft</span> wall area</span>');
+        if (mTotals.linear > 0) totalParts.push('<span><span class="pv-meas-total-val">' + fmt2(mTotals.linear) + ' lin ft</span> linear</span>');
+        if (mTotals.volume > 0) totalParts.push('<span><span class="pv-meas-total-val">' + fmt2(mTotals.volume) + ' cu ft</span> volume</span>');
+
+        h += '<div class="pv-section">';
+        h +=   '<div class="pv-section-header"><span>Project Measurements</span></div>';
+        h +=   '<table class="pv-table">';
+        measPrintData.forEach(row => {
+          const resStr = row.result > 0
+            ? row.result.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + row.unit
+            : '—';
+          h += '<tr><td>' + esc(row.area) + '</td><td class="pv-td-detail">' + row.dimStr + '</td><td class="pv-td-amt">' + resStr + '</td></tr>';
+        });
+        h +=   '</table>';
+        if (totalParts.length > 1) {
+          h += '<div class="pv-meas-totals">' + totalParts.join('') + '</div>';
+        }
+        h += '</div>';
+      }
+
       // LABOR
       if (laborData.length) {
         h += '<div class="pv-section">';
@@ -2091,10 +2400,11 @@
           contingency: document.getElementById('contingency-pct').value,
           profit:      document.getElementById('profit-pct').value,
         },
-        labor:     serializeSection('labor-body', 'labor'),
-        materials: serializeSection('materials-body', 'materials'),
-        equipment: serializeSection('equipment-body', 'equipment'),
-        subs:      serializeSection('sub-body', 'subs'),
+        labor:        serializeSection('labor-body', 'labor'),
+        materials:    serializeSection('materials-body', 'materials'),
+        equipment:    serializeSection('equipment-body', 'equipment'),
+        subs:         serializeSection('sub-body', 'subs'),
+        measurements: serializeMeasurements(),
       };
     }
 
@@ -2115,13 +2425,14 @@
         document.getElementById('contingency-pct').value = data.adjustments.contingency ?? 7;
         document.getElementById('profit-pct').value      = data.adjustments.profit ?? 20;
       }
-      ['labor-body','materials-body','equipment-body','sub-body'].forEach(id => {
+      ['labor-body','materials-body','equipment-body','sub-body','meas-body'].forEach(id => {
         document.getElementById(id).innerHTML = '';
       });
       (data.labor || []).forEach(r => addLaborRow({ role: r.role, isCustomRole: r.isCustom, hours: r.hours, rate: r.rate, crew: r.crew }));
       (data.materials || []).forEach(r => addMaterialRow({ item: r.item, isCustomItem: r.isCustom, qty: r.qty, unitCost: r.unitCost, waste: r.waste }));
       (data.equipment || []).forEach(r => addEquipmentRow({ name: r.name, isCustomName: r.isCustom, days: r.days, dailyRate: r.dailyRate }));
       (data.subs || []).forEach(r => addSubRow({ trade: r.trade, isCustomTrade: r.isCustom, cost: r.cost }));
+      (data.measurements || []).forEach(r => addMeasurementRow(r));
       syncSummaryHeader();
       calculate();
     }
@@ -2228,7 +2539,7 @@
         html += '<div class="lib-card-meta">Saved ' + savedDate + '</div>';
         html += '<div class="lib-card-actions">'
           + '<button class="lib-btn lib-btn-load" onclick="loadEstimateFromLibrary(\'' + entry.id + '\')">Load</button>'
-          + '<button class="lib-btn lib-btn-export" onclick="exportEstimateAsJSON(\'' + entry.id + '\')">Export JSON</button>'
+          + '<button class="lib-btn lib-btn-export" onclick="exportEstimateAsJSON(\'' + entry.id + '\')">Export Estimate</button>'
           + '<button class="lib-btn lib-btn-delete" onclick="deleteEstimate(\'' + entry.id + '\')">Delete</button>'
           + '</div>';
         html += '</div>';
@@ -2386,9 +2697,10 @@
       document.getElementById('contingency-pct').value = '7';
       document.getElementById('profit-pct').value      = '20';
       // Clear rows
-      ['labor-body','materials-body','equipment-body','sub-body'].forEach(id => {
+      ['labor-body','materials-body','equipment-body','sub-body','meas-body'].forEach(id => {
         document.getElementById(id).innerHTML = '';
       });
+      document.getElementById('meas-totals').innerHTML = '';
       syncSummaryHeader();
       calculate();
     }
