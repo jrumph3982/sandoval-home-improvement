@@ -89,6 +89,20 @@ body {
   position: relative;
   z-index: 2;
 }
+/* Covers the "KRA" logo on the worker's shirt.
+   z-index:0 keeps it below the ::before overlay (z-index:1) so the
+   gradient blends naturally over the patch.
+   Tune left/top/width/height in devtools if the crop shifts. */
+.hero-section .kra-cover {
+  position: absolute;
+  z-index: 0;
+  left: 61%;
+  top: 21%;
+  width: 110px;
+  height: 38px;
+  background: #c4c8cc;
+  border-radius: 4px;
+}
 
 /* ---- Page Banner (inner pages) ---- */
 .page-banner {
