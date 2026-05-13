@@ -45,6 +45,25 @@ body {
   align-items: center;
 }
 
+/* Company name wordmark beside logo */
+.logo-wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.logo-wordmark .wm-primary {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+.logo-wordmark .wm-secondary {
+  color: #fb923c;
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 /* Mobile nav open */
 #nav-menu.open {
   display: flex;
