@@ -45,6 +45,15 @@ body {
   align-items: center;
 }
 
+/* Logo link — flex row containing pill + wordmark */
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
 /* Company name wordmark beside logo */
 .logo-wordmark {
   display: flex;
