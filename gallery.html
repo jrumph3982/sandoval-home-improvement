@@ -15,10 +15,7 @@
   <div id="lightbox-overlay" role="dialog" aria-modal="true">
     <button id="lightbox-close" aria-label="Close">&times;</button>
     <img id="lightbox-img" src="" alt="">
-    <div id="lightbox-toggle">
-      <button id="lb-before" class="lb-toggle-btn active">Before</button>
-      <button id="lb-after" class="lb-toggle-btn">After</button>
-    </div>
+    <div id="lightbox-thumbs"></div>
     <p id="lightbox-caption"></p>
   </div>
 
@@ -90,20 +87,15 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
         <!-- Kitchen Remodel -->
-        <div class="gallery-item fade-up" data-category="kitchen-bath">
+        <div class="gallery-item fade-up" data-category="kitchen-bath"
+             data-project='[{"src":"images/Jobs/Kitchen-Before.jpeg","label":"Before"},{"src":"images/Jobs/Kitchen-After.jpeg","label":"After"}]'>
           <div class="bg-slate-50 rounded-xl overflow-hidden shadow-md">
             <div class="grid grid-cols-2 gap-0">
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Kitchen-Before.jpeg" data-state="before"
-                   data-pair="images/Jobs/Kitchen-After.jpeg"
-                   data-caption="Kitchen Remodel — Before" data-pair-caption="Kitchen Remodel — After">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Kitchen-Before.jpeg">
                 <img src="images/Jobs/Kitchen-Before.jpeg" alt="Before — Kitchen" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-slate-900 text-white text-xs font-black uppercase px-2.5 py-1 rounded">Before</span>
               </div>
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Kitchen-After.jpeg" data-state="after"
-                   data-pair="images/Jobs/Kitchen-Before.jpeg"
-                   data-caption="Kitchen Remodel — After" data-pair-caption="Kitchen Remodel — Before">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Kitchen-After.jpeg">
                 <img src="images/Jobs/Kitchen-After.jpeg" alt="After — Kitchen" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-orange-600 text-white text-xs font-black uppercase px-2.5 py-1 rounded">After</span>
               </div>
@@ -116,20 +108,15 @@
         </div>
 
         <!-- Cabinet Refresh -->
-        <div class="gallery-item fade-up" data-category="kitchen-bath">
+        <div class="gallery-item fade-up" data-category="kitchen-bath"
+             data-project='[{"src":"images/Jobs/Cabinets-Before.jpeg","label":"Before"},{"src":"images/Jobs/Cabinets-After.jpeg","label":"After"}]'>
           <div class="bg-slate-50 rounded-xl overflow-hidden shadow-md">
             <div class="grid grid-cols-2 gap-0">
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Cabinets-Before.jpeg" data-state="before"
-                   data-pair="images/Jobs/Cabinets-After.jpeg"
-                   data-caption="Cabinet Refresh — Before" data-pair-caption="Cabinet Refresh — After">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Cabinets-Before.jpeg">
                 <img src="images/Jobs/Cabinets-Before.jpeg" alt="Before — Cabinets" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-slate-900 text-white text-xs font-black uppercase px-2.5 py-1 rounded">Before</span>
               </div>
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Cabinets-After.jpeg" data-state="after"
-                   data-pair="images/Jobs/Cabinets-Before.jpeg"
-                   data-caption="Cabinet Refresh — After" data-pair-caption="Cabinet Refresh — Before">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Cabinets-After.jpeg">
                 <img src="images/Jobs/Cabinets-After.jpeg" alt="After — Cabinets" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-orange-600 text-white text-xs font-black uppercase px-2.5 py-1 rounded">After</span>
               </div>
@@ -142,20 +129,15 @@
         </div>
 
         <!-- Sink Replacement -->
-        <div class="gallery-item fade-up" data-category="kitchen-bath">
+        <div class="gallery-item fade-up" data-category="kitchen-bath"
+             data-project='[{"src":"images/Jobs/Sink-Before.png","label":"Before"},{"src":"images/Jobs/Sink-After.png","label":"After"},{"src":"images/Jobs/Sink-After_2.png","label":"After 2"}]'>
           <div class="bg-slate-50 rounded-xl overflow-hidden shadow-md">
             <div class="grid grid-cols-2 gap-0">
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Sink-Before.png" data-state="before"
-                   data-pair="images/Jobs/Sink-After.png"
-                   data-caption="Sink Replacement — Before" data-pair-caption="Sink Replacement — After">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Sink-Before.png">
                 <img src="images/Jobs/Sink-Before.png" alt="Before — Sink" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-slate-900 text-white text-xs font-black uppercase px-2.5 py-1 rounded">Before</span>
               </div>
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Sink-After.png" data-state="after"
-                   data-pair="images/Jobs/Sink-Before.png"
-                   data-caption="Sink Replacement — After" data-pair-caption="Sink Replacement — Before">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Sink-After.png">
                 <img src="images/Jobs/Sink-After.png" alt="After — Sink" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-orange-600 text-white text-xs font-black uppercase px-2.5 py-1 rounded">After</span>
               </div>
@@ -168,20 +150,15 @@
         </div>
 
         <!-- Bathroom Renovation -->
-        <div class="gallery-item fade-up" data-category="kitchen-bath">
+        <div class="gallery-item fade-up" data-category="kitchen-bath"
+             data-project='[{"src":"images/Jobs/Bathroom_Before.jpg","label":"Before"},{"src":"images/Jobs/Bathroom_After.jpg","label":"After"}]'>
           <div class="bg-slate-50 rounded-xl overflow-hidden shadow-md">
             <div class="grid grid-cols-2 gap-0">
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Bathroom_Before.jpg" data-state="before"
-                   data-pair="images/Jobs/Bathroom_After.jpg"
-                   data-caption="Bathroom Renovation — Before" data-pair-caption="Bathroom Renovation — After">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Bathroom_Before.jpg">
                 <img src="images/Jobs/Bathroom_Before.jpg" alt="Before — Bathroom" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-slate-900 text-white text-xs font-black uppercase px-2.5 py-1 rounded">Before</span>
               </div>
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Bathroom_After.jpg" data-state="after"
-                   data-pair="images/Jobs/Bathroom_Before.jpg"
-                   data-caption="Bathroom Renovation — After" data-pair-caption="Bathroom Renovation — Before">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Bathroom_After.jpg">
                 <img src="images/Jobs/Bathroom_After.jpg" alt="After — Bathroom" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-orange-600 text-white text-xs font-black uppercase px-2.5 py-1 rounded">After</span>
               </div>
@@ -194,20 +171,15 @@
         </div>
 
         <!-- Flooring Installation -->
-        <div class="gallery-item fade-up" data-category="interior">
+        <div class="gallery-item fade-up" data-category="interior"
+             data-project='[{"src":"images/Jobs/Floor-Before.webp","label":"Before"},{"src":"images/Jobs/Floor-Before_2.webp","label":"Before 2"},{"src":"images/Jobs/Floor-After.jpg","label":"After"},{"src":"images/Jobs/Floor-After_2.jpg","label":"After 2"}]'>
           <div class="bg-slate-50 rounded-xl overflow-hidden shadow-md">
             <div class="grid grid-cols-2 gap-0">
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Floor-Before.webp" data-state="before"
-                   data-pair="images/Jobs/Floor-After.jpg"
-                   data-caption="Flooring Installation — Before" data-pair-caption="Flooring Installation — After">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Floor-Before.webp">
                 <img src="images/Jobs/Floor-Before.webp" alt="Before — Flooring" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-slate-900 text-white text-xs font-black uppercase px-2.5 py-1 rounded">Before</span>
               </div>
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Floor-After.jpg" data-state="after"
-                   data-pair="images/Jobs/Floor-Before.webp"
-                   data-caption="Flooring Installation — After" data-pair-caption="Flooring Installation — Before">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Floor-After.jpg">
                 <img src="images/Jobs/Floor-After.jpg" alt="After — Flooring" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-orange-600 text-white text-xs font-black uppercase px-2.5 py-1 rounded">After</span>
               </div>
@@ -220,20 +192,15 @@
         </div>
 
         <!-- Fireplace Surround -->
-        <div class="gallery-item fade-up" data-category="interior">
+        <div class="gallery-item fade-up" data-category="interior"
+             data-project='[{"src":"images/Jobs/Fireplace_Before.jpeg","label":"Before"},{"src":"images/Jobs/Fireplace_after.jpeg","label":"After"}]'>
           <div class="bg-slate-50 rounded-xl overflow-hidden shadow-md">
             <div class="grid grid-cols-2 gap-0">
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Fireplace_Before.jpeg" data-state="before"
-                   data-pair="images/Jobs/Fireplace_after.jpeg"
-                   data-caption="Fireplace Surround — Before" data-pair-caption="Fireplace Surround — After">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Fireplace_Before.jpeg">
                 <img src="images/Jobs/Fireplace_Before.jpeg" alt="Before — Fireplace" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-slate-900 text-white text-xs font-black uppercase px-2.5 py-1 rounded">Before</span>
               </div>
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Fireplace_after.jpeg" data-state="after"
-                   data-pair="images/Jobs/Fireplace_Before.jpeg"
-                   data-caption="Fireplace Surround — After" data-pair-caption="Fireplace Surround — Before">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Fireplace_after.jpeg">
                 <img src="images/Jobs/Fireplace_after.jpeg" alt="After — Fireplace" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-orange-600 text-white text-xs font-black uppercase px-2.5 py-1 rounded">After</span>
               </div>
@@ -246,20 +213,15 @@
         </div>
 
         <!-- Shed Build -->
-        <div class="gallery-item fade-up" data-category="outdoor">
+        <div class="gallery-item fade-up" data-category="outdoor"
+             data-project='[{"src":"images/Jobs/Shed-Before.png","label":"Before"},{"src":"images/Jobs/Shed-Before_2.jpeg","label":"Before 2"},{"src":"images/Jobs/Shed-After.jpeg","label":"After"}]'>
           <div class="bg-slate-50 rounded-xl overflow-hidden shadow-md">
             <div class="grid grid-cols-2 gap-0">
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Shed-Before.png" data-state="before"
-                   data-pair="images/Jobs/Shed-After.jpeg"
-                   data-caption="Shed Build — Before" data-pair-caption="Shed Build — After">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Shed-Before.png">
                 <img src="images/Jobs/Shed-Before.png" alt="Before — Shed" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-slate-900 text-white text-xs font-black uppercase px-2.5 py-1 rounded">Before</span>
               </div>
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Shed-After.jpeg" data-state="after"
-                   data-pair="images/Jobs/Shed-Before.png"
-                   data-caption="Shed Build — After" data-pair-caption="Shed Build — Before">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Shed-After.jpeg">
                 <img src="images/Jobs/Shed-After.jpeg" alt="After — Shed" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-orange-600 text-white text-xs font-black uppercase px-2.5 py-1 rounded">After</span>
               </div>
@@ -272,20 +234,15 @@
         </div>
 
         <!-- Walkway Installation -->
-        <div class="gallery-item fade-up" data-category="outdoor">
+        <div class="gallery-item fade-up" data-category="outdoor"
+             data-project='[{"src":"images/Jobs/Walkway-Before.jpeg","label":"Before"},{"src":"images/Jobs/Walkway-Before_2.jpeg","label":"Before 2"},{"src":"images/Jobs/Walkway-After.jpeg","label":"After"},{"src":"images/Jobs/Walkway-After_2.jpeg","label":"After 2"},{"src":"images/Jobs/Walkway-After_3.jpeg","label":"After 3"}]'>
           <div class="bg-slate-50 rounded-xl overflow-hidden shadow-md">
             <div class="grid grid-cols-2 gap-0">
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Walkway-Before.jpeg" data-state="before"
-                   data-pair="images/Jobs/Walkway-After.jpeg"
-                   data-caption="Walkway Installation — Before" data-pair-caption="Walkway Installation — After">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Walkway-Before.jpeg">
                 <img src="images/Jobs/Walkway-Before.jpeg" alt="Before — Walkway" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-slate-900 text-white text-xs font-black uppercase px-2.5 py-1 rounded">Before</span>
               </div>
-              <div class="relative overflow-hidden" style="cursor:pointer"
-                   data-lightbox="images/Jobs/Walkway-After.jpeg" data-state="after"
-                   data-pair="images/Jobs/Walkway-Before.jpeg"
-                   data-caption="Walkway Installation — After" data-pair-caption="Walkway Installation — Before">
+              <div class="relative overflow-hidden" style="cursor:pointer" data-lightbox="images/Jobs/Walkway-After.jpeg">
                 <img src="images/Jobs/Walkway-After.jpeg" alt="After — Walkway" class="w-full h-52 object-cover">
                 <span class="absolute top-2 left-2 bg-orange-600 text-white text-xs font-black uppercase px-2.5 py-1 rounded">After</span>
               </div>

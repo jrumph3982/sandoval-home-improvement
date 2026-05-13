@@ -82,49 +82,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const lightboxImg = document.getElementById('lightbox-img');
   const lightboxCaption = document.getElementById('lightbox-caption');
   const lightboxClose = document.getElementById('lightbox-close');
-  const lbBefore = document.getElementById('lb-before');
-  const lbAfter = document.getElementById('lb-after');
+  const lightboxThumbs = document.getElementById('lightbox-thumbs');
 
   if (lightbox) {
-    let beforeSrc = '', afterSrc = '', beforeCaption = '', afterCaption = '', currentState = 'before';
+    let project = [];
+    let currentIdx = 0;
 
-    function showImage(state) {
-      currentState = state;
-      if (state === 'before') {
-        lightboxImg.src = beforeSrc;
-        lightboxCaption.textContent = beforeCaption;
-        lbBefore.classList.add('active');
-        lbAfter.classList.remove('active');
-      } else {
-        lightboxImg.src = afterSrc;
-        lightboxCaption.textContent = afterCaption;
-        lbAfter.classList.add('active');
-        lbBefore.classList.remove('active');
-      }
+    function showSlide(idx) {
+      currentIdx = idx;
+      lightboxImg.src = project[idx].src;
+      lightboxCaption.textContent = project[idx].label;
+      lightboxThumbs.querySelectorAll('.lb-thumb').forEach((t, i) => {
+        t.classList.toggle('active', i === idx);
+      });
     }
 
-    document.querySelectorAll('[data-lightbox]').forEach(item => {
-      item.addEventListener('click', () => {
-        const state = item.dataset.state || 'after';
-        if (state === 'before') {
-          beforeSrc = item.dataset.lightbox;
-          beforeCaption = item.dataset.caption || '';
-          afterSrc = item.dataset.pair || '';
-          afterCaption = item.dataset.pairCaption || '';
-        } else {
-          afterSrc = item.dataset.lightbox;
-          afterCaption = item.dataset.caption || '';
-          beforeSrc = item.dataset.pair || '';
-          beforeCaption = item.dataset.pairCaption || '';
-        }
+    function buildThumbs() {
+      lightboxThumbs.innerHTML = '';
+      project.forEach((item, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'lb-thumb';
+        btn.setAttribute('aria-label', item.label);
+        const img = document.createElement('img');
+        img.src = item.src;
+        img.alt = item.label;
+        const lbl = document.createElement('span');
+        lbl.textContent = item.label;
+        btn.appendChild(img);
+        btn.appendChild(lbl);
+        btn.addEventListener('click', e => { e.stopPropagation(); showSlide(i); });
+        lightboxThumbs.appendChild(btn);
+      });
+    }
+
+    document.querySelectorAll('[data-lightbox]').forEach(el => {
+      el.addEventListener('click', () => {
+        const clickedSrc = el.dataset.lightbox;
+        const card = el.closest('[data-project]');
+        project = card ? JSON.parse(card.dataset.project) : [{ src: clickedSrc, label: '' }];
+        const idx = project.findIndex(p => p.src === clickedSrc);
+        buildThumbs();
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
-        showImage(state);
+        showSlide(idx >= 0 ? idx : 0);
       });
     });
-
-    if (lbBefore) lbBefore.addEventListener('click', () => showImage('before'));
-    if (lbAfter) lbAfter.addEventListener('click', () => showImage('after'));
 
     function closeLightbox() {
       lightbox.classList.remove('active');
@@ -138,8 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') { closeLightbox(); return; }
-      if (lightbox.classList.contains('active') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
-        showImage(currentState === 'before' ? 'after' : 'before');
+      if (lightbox.classList.contains('active')) {
+        if (e.key === 'ArrowLeft') showSlide((currentIdx - 1 + project.length) % project.length);
+        if (e.key === 'ArrowRight') showSlide((currentIdx + 1) % project.length);
       }
     });
   }
