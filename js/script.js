@@ -82,18 +82,49 @@ document.addEventListener('DOMContentLoaded', () => {
   const lightboxImg = document.getElementById('lightbox-img');
   const lightboxCaption = document.getElementById('lightbox-caption');
   const lightboxClose = document.getElementById('lightbox-close');
+  const lbBefore = document.getElementById('lb-before');
+  const lbAfter = document.getElementById('lb-after');
 
   if (lightbox) {
+    let beforeSrc = '', afterSrc = '', beforeCaption = '', afterCaption = '', currentState = 'before';
+
+    function showImage(state) {
+      currentState = state;
+      if (state === 'before') {
+        lightboxImg.src = beforeSrc;
+        lightboxCaption.textContent = beforeCaption;
+        lbBefore.classList.add('active');
+        lbAfter.classList.remove('active');
+      } else {
+        lightboxImg.src = afterSrc;
+        lightboxCaption.textContent = afterCaption;
+        lbAfter.classList.add('active');
+        lbBefore.classList.remove('active');
+      }
+    }
+
     document.querySelectorAll('[data-lightbox]').forEach(item => {
       item.addEventListener('click', () => {
-        const src = item.dataset.lightbox;
-        const caption = item.dataset.caption || '';
-        lightboxImg.src = src;
-        lightboxCaption.textContent = caption;
+        const state = item.dataset.state || 'after';
+        if (state === 'before') {
+          beforeSrc = item.dataset.lightbox;
+          beforeCaption = item.dataset.caption || '';
+          afterSrc = item.dataset.pair || '';
+          afterCaption = item.dataset.pairCaption || '';
+        } else {
+          afterSrc = item.dataset.lightbox;
+          afterCaption = item.dataset.caption || '';
+          beforeSrc = item.dataset.pair || '';
+          beforeCaption = item.dataset.pairCaption || '';
+        }
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
+        showImage(state);
       });
     });
+
+    if (lbBefore) lbBefore.addEventListener('click', () => showImage('before'));
+    if (lbAfter) lbAfter.addEventListener('click', () => showImage('after'));
 
     function closeLightbox() {
       lightbox.classList.remove('active');
@@ -106,7 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === lightbox) closeLightbox();
     });
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'Escape') { closeLightbox(); return; }
+      if (lightbox.classList.contains('active') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        showImage(currentState === 'before' ? 'after' : 'before');
+      }
     });
   }
 
