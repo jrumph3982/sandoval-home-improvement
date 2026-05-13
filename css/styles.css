@@ -59,15 +59,14 @@ body {
   display: flex;
   flex-direction: column;
   line-height: 1.2;
-  background: red;
 }
 .logo-wordmark .wm-primary {
-  color: #ffffff;
+  color: #ffffff !important;
   font-weight: 700;
   font-size: 1.25rem;
 }
 .logo-wordmark .wm-secondary {
-  color: #fb923c;
+  color: #fb923c !important;
   font-weight: 500;
   font-size: 0.75rem;
   letter-spacing: 0.1em;
