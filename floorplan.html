@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Floor Plan Builder | Sandoval Home Improvement</title>
+  <link rel="icon" href="assets/logo.png">
+  <script src="js/tailwind.cdn.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <script>(function(){var m=window.matchMedia('(max-width:767px)').matches;document.documentElement.classList.add(m?'is-mobile':'is-desktop');window.addEventListener('resize',function(){var b=window.matchMedia('(max-width:767px)').matches;document.documentElement.classList.toggle('is-mobile',b);document.documentElement.classList.toggle('is-desktop',!b);});})();</script>
+  <style>
+    /* ===== Floor Plan Builder ===== */
+    body { overflow: hidden; }
+
+    #fp-wrap {
+      height: calc(100vh - 80px);
+      display: flex;
+      flex-direction: column;
+      background: #f1f5f9;
+    }
+
+    /* Top bar */
+    #fp-topbar {
+      background: #1e293b;
+      color: white;
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      height: 44px;
+    }
+    #fp-topbar h1 {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: white;
+    }
+    .fp-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      font-size: 0.73rem;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .fp-back-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* Toolbar */
+    #fp-toolbar-bar {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0.35rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .fp-divider { width: 1px; height: 22px; background: #e2e8f0; margin: 0 0.2rem; }
+    .fp-tool {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.32rem 0.75rem;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 0.375rem;
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .fp-tool:hover { background: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+    .fp-tool[data-active="room"]       { background: #2563eb; border-color: #2563eb; color: white; }
+    .fp-tool[data-active="obstruction"]{ background: #ea580c; border-color: #ea580c; color: white; }
+    .fp-tool[data-active="delete"]     { background: #dc2626; border-color: #dc2626; color: white; }
+    .fp-tool[data-active="move"]       { background: #7c3aed; border-color: #7c3aed; color: white; }
+
+    .fp-icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px; height: 30px;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 0.375rem;
+      color: #475569;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1;
+      transition: all 0.15s;
+    }
+    .fp-icon-btn:hover { background: #f1f5f9; color: #1e293b; }
+
+    .fp-tip {
+      font-size: 0.67rem;
+      color: #94a3b8;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* Hint bar */
+    #fp-hint {
+      background: #fff7ed;
+      border-bottom: 1px solid #fed7aa;
+      color: #92400e;
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 0.28rem 0.85rem;
+      flex-shrink: 0;
+      min-height: 26px;
+    }
+
+    /* Main content */
+    #fp-main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    #fp-canvas-wrap {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    #fp-canvas {
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* Side panel */
+    #fp-panel {
+      width: 220px;
+      flex-shrink: 0;
+      background: white;
+      border-left: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .ps { /* panel section */
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .pl { /* panel label */
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #94a3b8;
+      margin-bottom: 0.3rem;
+    }
+    .par { /* panel area row */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      padding: 0.18rem 0;
+      color: #64748b;
+    }
+    .pav { /* panel area value */
+      font-weight: 700;
+      color: #1e293b;
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-net {
+      background: #0f172a;
+      padding: 0.8rem 0.9rem;
+      color: white;
+      flex-shrink: 0;
+    }
+    #panel-net .pl { color: #64748b; }
+    #net-val {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: #ea580c;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .net-unit { font-size: 0.72rem; color: #64748b; margin-top: 0.2rem; }
+    .obs-item { font-size: 0.7rem; color: #64748b; padding: 0.12rem 0; font-variant-numeric: tabular-nums; }
+    .panel-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      width: 100%;
+      padding: 0.55rem 1rem;
+      border-radius: 0.45rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+    .panel-btn:hover { opacity: 0.88; }
+    .room-name-input {
+      width: 100%;
+      padding: 0.36rem 0.55rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 0.375rem;
+      font-size: 0.78rem;
+      font-family: inherit;
+      color: #1e293b;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .room-name-input:focus { border-color: #ea580c; }
+
+    /* Floating length editor */
+    #fp-len-input {
+      position: absolute;
+      display: none;
+      width: 76px;
+      padding: 0.28rem 0.4rem;
+      border: 2px solid #ea580c;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: inherit;
+      text-align: center;
+      background: white;
+      color: #0f172a;
+      z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+      outline: none;
+    }
+
+    /* Obstruction name modal */
+    #obs-name-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    .obs-modal-box {
+      background: white;
+      border-radius: 0.6rem;
+      padding: 1.5rem 1.75rem;
+      width: 320px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .obs-modal-box h3 {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 0.3rem;
+    }
+    .obs-modal-box p {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      margin-bottom: 0.9rem;
+    }
+    .obs-modal-box input {
+      width: 100%;
+      padding: 0.45rem 0.65rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 0.375rem;
+      font-size: 0.82rem;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 0.9rem;
+    }
+    .obs-modal-box input:focus { border-color: #ea580c; }
+    .obs-modal-btns {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+    .obs-modal-btns button {
+      padding: 0.38rem 0.9rem;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+    }
+    .obs-btn-skip { background: #f1f5f9; color: #64748b; }
+    .obs-btn-skip:hover { background: #e2e8f0; }
+    .obs-btn-ok { background: #ea580c; color: white; }
+    .obs-btn-ok:hover { background: #c2410c; }
+
+    /* ===== MOBILE (≤767px) ===== */
+    @media (max-width: 767px) {
+      /* Header height reduced */
+      #fp-wrap { height: calc(100vh - 64px); }
+
+      /* Toolbar: single scrollable row */
+      #fp-toolbar-bar {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 0.3rem;
+        padding: 0.3rem 0.5rem;
+      }
+      #fp-toolbar-bar::-webkit-scrollbar { display: none; }
+      .fp-tip { display: none; }
+
+      /* Hint bar: more compact */
+      #fp-hint { font-size: 0.67rem; padding: 0.22rem 0.65rem; }
+
+      /* Canvas: leave room for panel handle */
+      #fp-main { margin-bottom: 48px; }
+
+      /* Side panel → bottom drawer */
+      #fp-panel {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        width: auto;
+        border-left: none;
+        border-top: none;
+        max-height: 65vh;
+        z-index: 200;
+        border-radius: 14px 14px 0 0;
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+        transform: translateY(calc(100% - 48px));
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        overflow-y: auto;
+      }
+      #fp-panel.panel-open { transform: translateY(0); }
+    }
+
+    /* Panel handle — mobile only */
+    #fp-panel-handle {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      height: 48px;
+      min-height: 48px;
+      background: #0f172a;
+      color: white;
+      border-radius: 14px 14px 0 0;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      user-select: none;
+    }
+    .fp-handle-grip {
+      width: 36px; height: 4px;
+      background: rgba(255,255,255,0.22);
+      border-radius: 2px;
+      position: absolute;
+      top: 8px; left: 50%; transform: translateX(-50%);
+    }
+    .fp-handle-label {
+      font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em; color: #64748b;
+    }
+    .fp-handle-val {
+      font-size: 1rem; font-weight: 900;
+      color: #ea580c; font-variant-numeric: tabular-nums;
+    }
+    @media (max-width: 767px) {
+      #fp-panel-handle { display: flex; }
+    }
+
+    /* Print — hidden on screen */
+    #fp-print { display: none; }
+
+    @media print {
+      body > * { display: none !important; }
+      #fp-print {
+        display: block !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        padding: 0.35in;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .fpp-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding-bottom: 8pt;
+        border-bottom: 2.5pt solid #0f172a;
+        margin-bottom: 10pt;
+      }
+      .fpp-co { font-size: 10.5pt; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: 0.04em; }
+      .fpp-sub { font-size: 7pt; color: #ea580c; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2pt; }
+      .fpp-room { font-size: 13pt; font-weight: 900; color: #0f172a; margin-top: 3pt; }
+      .fpp-contact { font-size: 7.5pt; color: #64748b; text-align: right; }
+      .fpp-img { width: 100%; max-height: 6.2in; object-fit: contain; border: 0.5pt solid #e2e8f0; display: block; margin: 8pt 0; }
+      .fpp-stats {
+        display: flex;
+        gap: 20pt;
+        font-size: 8pt;
+        color: #475569;
+        border-top: 1pt solid #e2e8f0;
+        padding-top: 6pt;
+      }
+      .fpp-stats strong { color: #0f172a; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header" style="position:relative; z-index:10;">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="logo-link">
+        <div class="logo-pill">
+          <img src="assets/logo.png" alt="Sandoval Home Improvement" class="h-14 w-auto">
+        </div>
+        <span class="logo-wordmark">
+          <span class="wm-primary">Sandoval</span>
+          <span class="wm-secondary">Home Improvement</span>
+        </span>
+      </a>
+    </nav>
+  </header>
+
+  <!-- ===== FLOOR PLAN APP ===== -->
+  <div id="fp-wrap">
+
+    <!-- Top bar -->
+    <div id="fp-topbar">
+      <h1>Floor Plan Builder</h1>
+      <a href="estimate.html" class="fp-back-btn">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Estimate
+      </a>
+    </div>
+
+    <!-- Toolbar -->
+    <div id="fp-toolbar-bar">
+      <button id="tool-room" class="fp-tool" data-mode="room" onclick="setMode('room')"
+        title="Draw room outline (click vertices, close to finish)">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        Draw Room
+      </button>
+      <button id="tool-obstruction" class="fp-tool" data-mode="obstruction" onclick="setMode('obstruction')"
+        title="Add an obstruction (island, column, stairs…)">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v8M8 12h8"/>
+        </svg>
+        Add Obstruction
+      </button>
+      <button id="tool-delete" class="fp-tool" data-mode="delete" onclick="setMode('delete')"
+        title="Click an obstruction to delete it">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+        Delete Obs.
+      </button>
+      <button id="tool-move" class="fp-tool" data-mode="move" onclick="setMode('move')"
+        title="Drag a vertex to reposition it, or drag inside an obstruction to move the whole shape">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
+        </svg>
+        Move
+      </button>
+
+      <div class="fp-divider"></div>
+
+      <button class="fp-icon-btn" onclick="zoomBy(6)" title="Zoom in">+</button>
+      <button class="fp-icon-btn" onclick="zoomBy(-6)" title="Zoom out">&minus;</button>
+      <button class="fp-tool" onclick="fitToRoom()" title="Fit room to view">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+        </svg>
+        Fit
+      </button>
+
+      <div class="fp-divider"></div>
+
+      <button class="fp-tool" onclick="undoPoint()" title="Undo last placed point">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+        </svg>
+        Undo Point
+      </button>
+      <button class="fp-tool" onclick="clearAll()" title="Clear and start over"
+        style="color:#dc2626; border-color:#fca5a5;">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Clear All
+      </button>
+
+      <div class="fp-divider"></div>
+      <span class="fp-tip">1 square = 1 ft &nbsp;&bull;&nbsp; Scroll = zoom &nbsp;&bull;&nbsp; Middle-click drag = pan &nbsp;&bull;&nbsp; Right-click = undo point</span>
+    </div>
+
+    <!-- Hint bar -->
+    <div id="fp-hint"></div>
+
+    <!-- Main: canvas + panel -->
+    <div id="fp-main">
+      <div id="fp-canvas-wrap">
+        <canvas id="fp-canvas"></canvas>
+        <input type="number" id="fp-len-input"
+          step="0.1" min="0.1" placeholder="ft"
+          onkeydown="if(event.key==='Enter'){applyLabelEdit(this);}else if(event.key==='Escape'){cancelLabelEdit(this);}"
+          onblur="applyLabelEdit(this)">
+      </div>
+
+      <!-- Side panel -->
+      <div id="fp-panel">
+
+        <!-- Mobile handle (tap to expand/collapse) -->
+        <div id="fp-panel-handle" onclick="togglePanel()">
+          <div class="fp-handle-grip"></div>
+          <span class="fp-handle-label">Net Area</span>
+          <span class="fp-handle-val" id="fp-handle-val">0.0 sq ft</span>
+        </div>
+
+        <div class="ps">
+          <div class="pl">Room Name</div>
+          <input type="text" id="room-name" class="room-name-input"
+            placeholder="e.g. Living Room" oninput="saveData()">
+        </div>
+
+        <div class="ps">
+          <div class="pl">Area Breakdown</div>
+          <div class="par">
+            <span>Gross Area</span>
+            <span><span class="pav" id="area-gross">0.0</span> sq ft</span>
+          </div>
+          <div id="obs-list" style="padding-left:0.5rem; border-left:2px solid #f1f5f9; margin:0.15rem 0;"></div>
+          <div class="par" style="border-top:1px solid #f1f5f9; padding-top:0.2rem; margin-top:0.15rem;">
+            <span>Obstructions</span>
+            <span>&minus;<span class="pav" id="area-obs">0.0</span> sq ft</span>
+          </div>
+        </div>
+
+        <div id="panel-net">
+          <div class="pl">Net Area</div>
+          <div id="net-val"><span id="area-net">0.0</span></div>
+          <div class="net-unit">sq ft</div>
+        </div>
+
+        <div class="ps" style="display:flex; flex-direction:column; gap:0.45rem;">
+          <button class="panel-btn" style="background:#1d4ed8; color:white;" onclick="openFinalized()">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+            </svg>
+            Finalize Plan
+          </button>
+          <button class="panel-btn" style="background:#ea580c; color:white;" onclick="sendToEstimate()">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Send to Estimate
+          </button>
+          <button class="panel-btn" style="background:#0f172a; color:white;" onclick="printPlan()">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            </svg>
+            Print Floor Plan
+          </button>
+        </div>
+
+        <div class="ps">
+          <div class="pl">Tips</div>
+          <ul style="font-size:0.67rem; color:#94a3b8; list-style:none; padding:0; margin:0; line-height:1.9;">
+            <li>Click to place corners</li>
+            <li>Click first point to close shape</li>
+            <li>Double-click or Enter to close</li>
+            <li>Right-click = undo last point</li>
+            <li><strong style="color:#64748b;">Click any wall length to edit it</strong></li>
+            <li><strong style="color:#64748b;">Move mode: drag vertices or obstructions</strong></li>
+            <li>Scroll wheel = zoom</li>
+            <li>Middle-click drag = pan</li>
+            <li>Draw room first, then add obstructions</li>
+          </ul>
+        </div>
+
+      </div><!-- #fp-panel -->
+    </div><!-- #fp-main -->
+
+  </div><!-- #fp-wrap -->
+
+  <!-- ===== OBSTRUCTION NAME MODAL ===== -->
+  <div id="obs-name-modal">
+    <div class="obs-modal-box">
+      <h3>Name This Obstruction</h3>
+      <p>Optional — e.g. "Island", "Column", "Staircase". Leave blank to skip.</p>
+      <input type="text" id="obs-name-input" placeholder="Obstruction name (optional)"
+        maxlength="40"
+        onkeydown="if(event.key==='Enter'){confirmObsName();}else if(event.key==='Escape'){skipObsName();}">
+      <div class="obs-modal-btns">
+        <button class="obs-btn-skip" onclick="skipObsName()">Skip</button>
+        <button class="obs-btn-ok" onclick="confirmObsName()">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PRINT SECTION (screen-hidden) ===== -->
+  <div id="fp-print">
+    <div class="fpp-header">
+      <div>
+        <div class="fpp-co">Sandoval Home Improvement</div>
+        <div class="fpp-sub">Floor Plan</div>
+        <div class="fpp-room" id="fp-print-name">Floor Plan</div>
+      </div>
+      <div class="fpp-contact">
+        703-937-7579<br>
+        EstimateRequest@sandovalhomeimprovement.net
+      </div>
+    </div>
+    <img id="fp-print-img" class="fpp-img" src="" alt="Floor Plan">
+    <div id="fp-print-stats" class="fpp-stats"></div>
+  </div>
+
+  <script src="js/floorplan.js"></script>
+</body>
+</html>

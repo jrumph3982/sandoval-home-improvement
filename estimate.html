@@ -5,10 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Internal estimate builder for Sandoval Home Improvement projects.">
-  <title>Estimate Builder | Admin Panel | Sandoval Home Improvement</title>
+  <title>Estimate Generator | Sandoval Home Improvement</title>
   <link rel="icon" href="assets/logo.png">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind.cdn.js"></script>
   <link rel="stylesheet" href="css/styles.css">
+  <script>(function(){var m=window.matchMedia('(max-width:767px)').matches;document.documentElement.classList.add(m?'is-mobile':'is-desktop');window.addEventListener('resize',function(){var b=window.matchMedia('(max-width:767px)').matches;document.documentElement.classList.toggle('is-mobile',b);document.documentElement.classList.toggle('is-desktop',!b);});})();</script>
   <style>
     /* ===== Estimate Builder Styles ===== */
     .est-card {
@@ -394,6 +395,51 @@
     .sm-btn-save { background: #ea580c; color: white; }
     .sm-btn-save:hover { background: #c2410c; }
 
+    /* ===== MOBILE (≤767px) ===== */
+    @media (max-width: 767px) {
+      .est-card-body { padding: 1rem; }
+      .est-card-header { padding: 0.75rem 1rem; }
+
+      /* Action bar groups: horizontal scroll, no wrap */
+      .action-bar-group { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-shrink: 0; }
+      .action-bar-group > div { flex-wrap: nowrap; }
+
+      /* Adj rows: stack label above controls */
+      .adj-row { flex-wrap: wrap; gap: 0.4rem; }
+      .adj-label { flex: 1 1 100%; }
+      .adj-computed { width: 90px; }
+
+      /* FP banner: stack vertically */
+      #fp-banner { flex-direction: column !important; align-items: flex-start !important; gap: 0.65rem !important; }
+      #fp-banner a { width: 100%; justify-content: center; display: flex; }
+
+      /* Summary: no sticky on mobile */
+      .summary-sticky { position: static; top: auto; }
+
+      /* Extra bottom padding for mob-total-bar + call sticky */
+      body { padding-bottom: 112px !important; }
+    }
+
+    /* Mobile total bar */
+    #mob-total-bar {
+      position: fixed;
+      bottom: 58px;
+      left: 0; right: 0;
+      background: #0f172a;
+      color: white;
+      padding: 0.6rem 1.25rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 490;
+      box-shadow: 0 -1px 8px rgba(0,0,0,0.3);
+    }
+    .mob-total-label { color: #64748b; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; }
+    .mob-total-val { color: #ea580c; font-size: 1.05rem; font-weight: 900; font-variant-numeric: tabular-nums; margin-top: 1px; }
+    #mob-total-bar .mob-scroll-link { color: #64748b; font-size: 0.7rem; font-weight: 600; text-decoration: none; border: 1px solid #334155; border-radius: 4px; padding: 0.25rem 0.5rem; white-space: nowrap; }
+    #mob-total-bar .mob-scroll-link:hover { color: #ea580c; border-color: #ea580c; }
+    @media (max-width: 767px) { #mob-total-bar { display: flex; } }
+
     /* ===== TOAST ===== */
     #est-toast {
       position: fixed; bottom: 5rem; left: 50%;
@@ -601,7 +647,7 @@
   <div class="page-banner no-print" style="background-image:url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1920&q=80')">
     <div class="banner-content py-14 px-4 max-w-7xl mx-auto">
       <p class="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">Internal Tool</p>
-      <h1 class="text-3xl sm:text-4xl font-black text-white uppercase">Admin Panel &mdash; Estimate Builder</h1>
+      <h1 class="text-3xl sm:text-4xl font-black text-white uppercase">Estimate Generator</h1>
       <span class="accent-bar-left mt-3"></span>
       <p class="text-slate-300 mt-4 text-sm max-w-lg">Build professional project estimates with live cost calculations. Changes save automatically.</p>
     </div>
@@ -621,7 +667,7 @@
         <div style="text-align:right; font-size:0.78rem; color:#475569; line-height:1.7;">
           <div><span style="font-weight:700; color:#0f172a;">Estimate #:</span> <span id="print-est-num">—</span></div>
           <div><span style="font-weight:700; color:#0f172a;">Date:</span> <span id="print-date">—</span></div>
-          <div style="margin-top:0.4rem; color:#64748b;">703-937-7579 | sandovalhomeimprovement@yahoo.com</div>
+          <div style="margin-top:0.4rem; color:#64748b;">703-937-7579 | EstimateRequest@sandovalhomeimprovement.net</div>
         </div>
       </div>
     </div>
@@ -726,6 +772,31 @@
             <h3>2 &mdash; Project Measurements</h3>
           </div>
           <div class="est-card-body">
+
+            <!-- Floor Plan Banner -->
+            <div id="fp-banner" style="display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:0.5rem;padding:0.55rem 1rem;margin-bottom:1rem;">
+              <div style="display:flex;align-items:center;gap:0.7rem;">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#64748b" stroke-width="1.75">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                </svg>
+                <div>
+                  <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:#94a3b8;">Floor Plan Area</div>
+                  <div style="font-size:1rem;font-weight:900;color:#0f172a;font-variant-numeric:tabular-nums;line-height:1.2;">
+                    <span id="fp-est-sqft">—</span>
+                    <span style="font-size:0.72rem;font-weight:500;color:#64748b;"> sq ft</span>
+                  </div>
+                </div>
+              </div>
+              <a href="floorplan.html"
+                style="display:inline-flex;align-items:center;gap:0.35rem;background:#0f172a;color:white;font-size:0.7rem;font-weight:700;padding:0.4rem 0.85rem;border-radius:0.375rem;text-decoration:none;transition:background 0.15s;font-family:inherit;"
+                onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='#0f172a'">
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                </svg>
+                Draw Floor Plan
+              </a>
+            </div>
+
             <div class="est-table-wrap">
               <table class="est-table" id="meas-table">
                 <thead>
@@ -1079,7 +1150,7 @@
             <li><a href="gallery.html" class="hover:text-orange-400 transition-colors">Gallery</a></li>
             <li><a href="request-quote.html" class="hover:text-orange-400 transition-colors">Request Quote</a></li>
             <li><a href="contact.html" class="hover:text-orange-400 transition-colors">Contact</a></li>
-            <li><a href="estimate.html" class="hover:text-orange-400 transition-colors text-orange-500 font-semibold">Admin Panel</a></li>
+            <li><a href="estimate.html" class="hover:text-orange-400 transition-colors text-orange-500 font-semibold">Estimate Generator</a></li>
           </ul>
         </div>
         <div>
@@ -1102,7 +1173,7 @@
             </li>
             <li class="flex items-start gap-3">
               <svg class="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-              <a href="mailto:sandovalhomeimprovement@yahoo.com" class="hover:text-orange-400">sandovalhomeimprovement@yahoo.com</a>
+              <a href="mailto:EstimateRequest@sandovalhomeimprovement.net" class="hover:text-orange-400">EstimateRequest@sandovalhomeimprovement.net</a>
             </li>
             <li class="flex items-start gap-3">
               <svg class="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -1116,6 +1187,18 @@
       </div>
     </div>
   </footer>
+
+  <!-- Mobile total bar — fixed above call sticky, visible on mobile only -->
+  <div id="mob-total-bar" class="no-print">
+    <div>
+      <div class="mob-total-label">Total Estimate</div>
+      <div class="mob-total-val" id="mob-total-val">$0.00</div>
+    </div>
+    <a class="mob-scroll-link" href="#"
+      onclick="document.querySelector('.summary-sidebar').scrollIntoView({behavior:'smooth'});return false;">
+      View Summary ↓
+    </a>
+  </div>
 
   <a id="mobile-call-sticky" href="tel:+17039377579" class="no-print">
     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1771,6 +1854,10 @@
       document.getElementById('sum-profit').textContent      = fmt(profit);
       document.getElementById('sum-pmo').textContent         = fmt(overhead + contingency + profit);
       document.getElementById('sum-total').textContent       = fmt(finalTotal);
+
+      // Mobile total bar
+      const mobVal = document.getElementById('mob-total-val');
+      if (mobVal) mobVal.textContent = fmt(finalTotal);
     }
 
     function syncSummaryHeader() {
@@ -1924,7 +2011,7 @@
       body += div2 + '\n';
       body += 'Sandoval Home Improvement\n';
       body += 'Licensed & Insured  |  Northern Virginia, DC & Maryland\n';
-      body += '703-937-7579  |  sandovalhomeimprovement@yahoo.com\n';
+      body += '703-937-7579  |  EstimateRequest@sandovalhomeimprovement.net\n';
       body += div + '\n';
       body += 'Estimate #:    ' + estNum + '\n';
       body += 'Date:          ' + dateStr + '\n';
@@ -2080,7 +2167,7 @@
 
       body += '\n' + div + '\n';
       body += 'This estimate is prepared by Sandoval Home Improvement.\n';
-      body += 'Licensed & Insured | VA, DC & MD | sandovalhomeimprovement@yahoo.com\n';
+      body += 'Licensed & Insured | VA, DC & MD | EstimateRequest@sandovalhomeimprovement.net\n';
       body += 'Questions? Call us at 703-937-7579 (Mon-Sat 7am-7pm)\n';
 
       return body;
@@ -2197,7 +2284,7 @@
       h +=     '<div>';
       h +=       '<div class="pv-company-name">Sandoval Home Improvement</div>';
       h +=       '<div class="pv-company-sub">Licensed &amp; Insured &bull; Northern Virginia &middot; DC &middot; Maryland</div>';
-      h +=       '<div class="pv-company-sub">703-937-7579 &bull; sandovalhomeimprovement@yahoo.com</div>';
+      h +=       '<div class="pv-company-sub">703-937-7579 &bull; EstimateRequest@sandovalhomeimprovement.net</div>';
       h +=     '</div>';
       h +=   '</div>';
       h +=   '<div class="pv-est-badge">';
@@ -2732,6 +2819,11 @@
       if (!dateEl.value) {
         dateEl.value = new Date().toISOString().split('T')[0];
         syncSummaryHeader();
+      }
+      // Load floor plan sq ft if available
+      const fpSqft = localStorage.getItem('sandoval_floorplan_sqft');
+      if (fpSqft) {
+        document.getElementById('fp-est-sqft').textContent = fpSqft;
       }
     })();
   </script>
