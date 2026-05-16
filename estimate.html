@@ -231,9 +231,9 @@
     }
     .custom-back-btn:hover { color: #ea580c; }
 
-    /* Mobile table scroll */
+    /* Table scroll — all screen sizes so tables never overflow the page */
+    .est-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     @media (max-width: 768px) {
-      .est-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .est-table { min-width: 520px; }
     }
 
